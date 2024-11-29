@@ -66,8 +66,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "./frontend/dist/*"
+          source: "./dist/*"
           target: ${{ secrets.SSH_FRONTEND_DIRECTORY }}
-          strip_components: 2
+          strip_components: 1
           overwrite: true
           rm: true
