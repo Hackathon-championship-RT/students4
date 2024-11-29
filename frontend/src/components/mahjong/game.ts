@@ -172,6 +172,7 @@ export class Game {
 
     // Restore the previous state of the game (before the last move)
     this.inGameTiles = [...this.inGameTiles, tile1, tile2]
+    this.selectedTile = null
     this.moveHistory.pop() // Remove the last move from history
     this.onTilesChange?.(this.inGameTiles)
   }
