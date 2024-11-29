@@ -1,18 +1,18 @@
 import type { Tile as TileT } from './game'
 import { useState } from 'react'
-import { FieldTemplate, TEMPLATE_1 } from './field-template'
+import { FieldTemplate, TEMPLATE_2 } from './field-template'
 import { Game } from './game'
 import { Tile } from './Tile'
 
 export function Mahjong() {
-  const [tiles, setTiles] = useState<TileT<string>[]>([])
-  const [selected, setSelected] = useState<TileT<string> | null>(null)
+  const [tiles, setTiles] = useState<TileT[]>([])
+  const [selected, setSelected] = useState<TileT | null>(null)
 
   const [game, _] = useState(() => {
-    const g = Game.random<string>(
-      FieldTemplate.decode(TEMPLATE_1),
+    const g = Game.random(
+      FieldTemplate.decode(TEMPLATE_2),
       (a, b) => a === b,
-      ['atom', 'bentley', 'tesla'],
+      ['atom', 'bentley', 'tesla', 'atom', 'bentley'],
     )
     g.onTilesChange = setTiles
     g.onSelectedTileChange = setSelected
@@ -20,8 +20,31 @@ export function Mahjong() {
     return g
   })
 
+  const handleUndo = () => {
+    game.undoLastMove()
+  }
+
+  // sort tiles by z, then by x, then by y
+  tiles.sort((a, b) => {
+    if (a.coord.z !== b.coord.z) {
+      return a.coord.z - b.coord.z
+    }
+    if (a.coord.x !== b.coord.x) {
+      return a.coord.x - b.coord.x
+    }
+    return a.coord.y - b.coord.y
+  })
+
   return (
     <div className="relative mt-8">
+      {/* Undo button */}
+      <button
+        className="absolute left-4 top-4 rounded bg-red-500 p-2 text-white"
+        onClick={handleUndo}
+      >
+        Undo Move
+      </button>
+
       {tiles.map((t, i) => (
         <Tile
           key={i}
@@ -34,36 +57,3 @@ export function Mahjong() {
     </div>
   )
 }
-
-// function Tile({
-//   tile,
-//   open,
-//   selected,
-//   onClick,
-// }: {
-//   tile: TileT
-//   open: boolean
-//   selected: boolean
-//   onClick?: () => void
-// }) {
-//   return (
-//     <div
-//       className={cn(
-//         'h-[40px] w-[20px] border bg-gray-300 text-green-900 translate-x-[calc(var(--x)*20px)] translate-y-[calc(var(--y)*20px)] absolute',
-//         !open && 'bg-slate-500 text-red-900',
-//         selected && 'bg-blue-500 text-white',
-//       )}
-//       style={{
-//         '--x': tile.coord.x,
-//         '--y': tile.coord.y,
-//         'zIndex': tile.coord.z,
-//       } as React.CSSProperties}
-//       onClick={(e) => {
-//         e.preventDefault()
-//         onClick?.()
-//       }}
-//     >
-//       {tile.kind as string}
-//     </div>
-//   )
-// }
