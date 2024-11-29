@@ -17,22 +17,27 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        working-directory: frontend
         with:
           version: "9.14.4"
 
       - name: Set up Node
         uses: actions/setup-node@v4
+        working-directory: frontend
         with:
           node-version: 20
           cache: pnpm
 
       - name: Install dependencies
-        run: cd frontend && pnpm install --frozen-lockfile --ignore-scripts
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build
+        working-directory: frontend
         run: pnpm run build
 
       - name: List files
+        working-directory: frontend
         run: |
           # Save the list of files as a GitHub Actions step summary
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
