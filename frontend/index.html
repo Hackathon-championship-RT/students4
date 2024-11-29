@@ -1,11 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game</title>
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="stylesheet" href="/src/index.css" />
+
+    <!-- Track mouse for CSS -->
+    <script type="application/javascript">
+      window.addEventListener('mousemove', (e) => {
+        document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+        document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

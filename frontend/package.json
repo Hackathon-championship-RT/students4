@@ -10,9 +10,10 @@
     "deps": "taze -wI minor",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "gen:api": "npx openapi-typescript http://hack.innohassle.ru:8000/openapi.json -o ./src/api/types.ts --root-types"
+    "gen:api": "npx openapi-typescript http://mahjong.innohassle.ru:8000/openapi.json -o ./src/api/types.ts --root-types"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.61.5",
     "@tanstack/react-router": "^1.85.0",
     "@tanstack/router-plugin": "^1.84.4",
@@ -45,5 +46,6 @@
     "eslint-plugin-tailwindcss": "^3.17.5",
     "sass-embedded": "^1.81.0",
     "taze": "^0.18.0"
-  }
+  },
+  "packageManager": "pnpm@8.6.9+sha1.5c56677cdd07fc5262e35a00b04f97220dde7e8d"
 }
