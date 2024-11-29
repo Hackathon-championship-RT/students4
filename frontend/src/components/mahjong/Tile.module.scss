@@ -1,0 +1,118 @@
+$tile-w: 150px;
+$logo-w: 200px;
+$original-tile-w: 240px;
+$original-tile-h: 180px;
+$original-tile-offset: 8px;
+$scale-ratio: $tile-w / $original-tile-w;
+
+$z-glass: 4;
+$z-noise: 3;
+$z-logo: 2;
+$z-bg: 1;
+$z-back: 0;
+
+.tile {
+  aspect-ratio: $original-tile-w / $original-tile-h;
+  width: $tile-w;
+  position: relative;
+  overflow: visible;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  // y is multiplied by 0.5, since the tile occupies 2 slots.
+  transform: translate(
+    calc(((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--x) * $tile-w),
+    calc(
+      ((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--y) * $original-tile-h * $scale-ratio * 0.5
+    )
+  );
+
+  &.closed {
+    filter: grayscale(60%) brightness(70%);
+  }
+
+  &:not(.closed) {
+    [data-wrapper] {
+      cursor: pointer;
+    }
+  }
+
+  [data-wrapper] {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px * $scale-ratio;
+  }
+
+  [data-logo] {
+    z-index: $z-logo;
+    width: $logo-w / $original-tile-w * 100%;
+
+    // @todo Create a glow effect by duplicating image behind and blurring backdrop.
+    //  Solution below doesn't work correctly in Chrome and is even worse in Safari.
+    // background-image: var(--img);
+    // background-size: 100%;
+    // background-repeat: no-repeat;
+    // img {
+    // backdrop-filter: blur(8px) saturate(1.5) opacity(80%);
+    // }
+
+    img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.5));
+    }
+  }
+
+  [data-glass] {
+    position: absolute;
+    inset: 0;
+    z-index: $z-glass;
+    background: rgb(255 255 255 / 0.05);
+    border-top: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: inset 0 0 2px 1px rgb(0 0 0 / 0.2);
+    box-sizing: content-box;
+    border-radius: 10px * $scale-ratio;
+  }
+
+  [data-noise] {
+    position: absolute;
+    inset: 0;
+    background-image: url('./assets/tile-noise.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: $z-noise;
+    opacity: 0.15;
+  }
+
+  [data-back] {
+    z-index: $z-back;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: ($original-tile-w + $original-tile-offset) * ($tile-w / $original-tile-w);
+    height: ($original-tile-h + $original-tile-offset) * ($tile-w / $original-tile-w);
+    background: linear-gradient(180deg, #404040 94.39%, #252525 100%);
+    mask-image: url('./assets/tile-back.svg');
+    mask-size: contain;
+    mask-position: top left;
+    mask-repeat: no-repeat;
+  }
+
+  [data-bg] {
+    z-index: $z-bg;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #5d5d5d;
+    box-shadow: inset 2px 4px 20px 4px rgba(0, 0, 0, 0.5);
+  }
+}
