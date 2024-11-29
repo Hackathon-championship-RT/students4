@@ -12,4 +12,9 @@ export default antfu(
     plugins: [],
   },
   ...tailwind.configs['flat/recommended'],
+  {
+    rules: {
+      'ts/consistent-type-definitions': 'off',
+    },
+  },
 )
