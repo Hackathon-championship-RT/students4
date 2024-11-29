@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"user_id":{"$numberInt":"1"},"event_id":{"$numberInt":"1"},"sport_id":{"$numberInt":"1"}},"name":"user_id_1_event_id_1_sport_id_1","unique":true}],"uuid":"50a35c74733641d8b20ad8d437a3d853","collectionName":"Notification","type":"collection"}
