@@ -27,7 +27,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+        run: cd frontend && pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build
         run: pnpm run build
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: static-files
-          path: dist/
+          path: frontend/dist/
           if-no-files-found: error
 
   deploy-frontend:
@@ -62,8 +62,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "./dist/*"
+          source: "./frontend/dist/*"
           target: ${{ secrets.SSH_FRONTEND_DIRECTORY }}
-          strip_components: 1
+          strip_components: 2
           overwrite: true
           rm: true
