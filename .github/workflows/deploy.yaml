@@ -1,0 +1,67 @@
+name: Build static files and deploy
+
+on:
+  # Allow manual trigger of the workflow
+  workflow_dispatch:
+  # Verify build on any push; deploy only on main branch
+  push:
+
+jobs:
+  build-frontend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Build static files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build
+        run: pnpm run build
+
+      - name: List files
+        run: |
+          # Save the list of files as a GitHub Actions step summary
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -lAhR ./dist 2>&1 | tee -a $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-files
+          path: dist/
+          if-no-files-found: error
+
+  deploy-frontend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Deploy to server
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: static-files
+          path: dist
+
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: "./dist/*"
+          target: ${{ secrets.SSH_FRONTEND_DIRECTORY }}
+          strip_components: 1
+          overwrite: true
+          rm: true
