@@ -31,7 +31,7 @@ export class Game {
   public static random(
     template: FieldTemplate,
     comparator: Comparator,
-    kinds: string[],
+    allKinds: string[],
     maxRetries = 100,
   ): Game {
     const availableCoords = [...template.tileCoords]
@@ -40,16 +40,37 @@ export class Game {
       throw new Error(`The number of tile positions (${availableCoords.length}) must be even`)
     }
 
-    if (availableCoords.length !== kinds.length * 4 && availableCoords.length !== kinds.length * 2) {
-      throw new Error(`The number of tile positions (${availableCoords.length}) must be equal to the number of choices (${kinds.length}) times 4 or times 2`)
+    const kinds: string[] = []
+    if (availableCoords.length / 4 > allKinds.length) {
+      kinds.push(...allKinds)
+      for (let i = 0; i < availableCoords.length / 4 - allKinds.length; i++) {
+        kinds.push(allKinds[Math.floor(Math.random() * allKinds.length)])
+      }
+    }
+    else if (availableCoords.length / 4 === allKinds.length) {
+      kinds.push(...allKinds)
+    }
+    else {
+      const leftoverKinds = [...allKinds]
+      shuffleArray(leftoverKinds)
+      kinds.push(...leftoverKinds.slice(0, Math.ceil(availableCoords.length / 4)))
     }
 
     for (let retry = 0; retry < maxRetries; retry++) {
       const tiles: Tile[] = []
-      const tilePerKind = availableCoords.length / kinds.length
       for (const kind of kinds) {
-        for (let i = 0; i < tilePerKind; i++) {
-          tiles.push({ kind, coord: null as any })
+        if (availableCoords.length - tiles.length >= 4) {
+          for (let i = 0; i < 4; i++) {
+            tiles.push({ kind, coord: null as any })
+          }
+        }
+        else if (availableCoords.length - tiles.length === 2) {
+          for (let i = 0; i < 2; i++) {
+            tiles.push({ kind, coord: null as any })
+          }
+        }
+        else {
+          throw new Error('Invalid number of available coordinates')
         }
       }
       // Shuffle tiles
