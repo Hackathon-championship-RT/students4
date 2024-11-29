@@ -1,4 +1,4 @@
-name: Build static files and deploy
+name: Build and deploy
 
 on:
   # Allow manual trigger of the workflow
@@ -9,7 +9,7 @@ on:
 jobs:
   build-frontend:
     if: github.repository_owner == 'one-zero-eight'
-    name: Build static files
+    name: Build frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
 
   deploy-frontend:
     if: github.repository_owner == 'one-zero-eight'
-    name: Deploy to server
+    name: Deploy frontend
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -71,3 +71,22 @@ jobs:
           strip_components: 1
           overwrite: true
           rm: true
+
+  deploy-backend:
+    if: github.repository_owner == 'one-zero-eight'
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true # Stop script on error
+          command_timeout: 30m
+          script: |
+            cd "${{ secrets.SSH_REPOSITORY }}"
+            git pull origin main
+            cd backend
+            docker compose up -d --build --pull always
