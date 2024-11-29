@@ -51,21 +51,22 @@ export class Game<K = unknown> {
     if (this.selectedTile) {
       if (coordsEqual(this.selectedTile.coord, tile.coord)) {
         this.selectedTile = null
+        this.onSelectedTileChange?.(this.selectedTile)
         return
       }
       else if (this.comparator(this.selectedTile.kind, tile.kind) && this.isTileOpen(tile.coord)) {
         this.removeTile(this.selectedTile.coord)
         this.removeTile(tile.coord)
         this.selectedTile = null
+        this.onSelectedTileChange?.(this.selectedTile)
         return
       }
     }
 
     if (this.isTileOpen(tile.coord)) {
       this.selectedTile = tile
+      this.onSelectedTileChange?.(this.selectedTile)
     }
-
-    this.onSelectedTileChange?.(this.selectedTile)
   }
 
   public removeTile(coord: Coordinate): void {
