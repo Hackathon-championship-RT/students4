@@ -18,6 +18,7 @@ import useSound from 'use-sound'
 import soundTilesMergedDelayed from './assets/bloop_300ms.mp3'
 import boomLottie from './assets/boom.lottie?arraybuffer'
 import soundTileSelect from './assets/pop-down.mp3'
+import { brands } from './brands'
 import { Controls } from './Controls'
 import { FieldTemplate } from './field-template'
 import { Game } from './game'
@@ -38,6 +39,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [startTime] = useState(() => Date.now())
   const [elapsedTime, setElapsedTime] = useState(0)
   const [tiles, setTiles] = useState<TileT[]>([])
+
   // sort tiles by z, then by x, then by y
   tiles.sort((a, b) => {
     if (a.coord.z !== b.coord.z) {
@@ -57,6 +59,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [undoCount, setUndoCount] = useState(0)
   const [clicksCount, setClicksCount] = useState(0)
   const [score, setScore] = useState(0)
+
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
@@ -81,6 +84,10 @@ export function Mahjong({ level }: { level: LevelInfo }) {
     setTiles(g.tiles())
     return g
   })
+
+  const [brandInfoDialogOpen, setBrandInfoDialogOpen] = useState(false)
+  const lastBrand = game.lastMove()?.[0].kind
+  const lastBrandInfo = lastBrand ? brands[lastBrand as keyof typeof brands] : undefined
 
   const [fieldMin, fieldMax] = game.dimensions()
   const { offsetX, offsetY } = getShiftToFieldOrigin(fieldMin)
@@ -338,6 +345,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             top: '50%',
             left: '50%',
             willChange: 'transform',
+            transition: 'transform 0.3s ease 0.5s',
             transform: `scale(${scale}) translate(${offsetX}px, ${offsetY}px) translate(-50%, -50%)`,
             transformOrigin: 'top left',
           }}
@@ -355,6 +363,39 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           ))}
         </div>
       </div>
+
+      {lastBrandInfo && (
+        <Button
+          className="fixed bottom-4 right-4 h-fit p-2"
+          onClick={() => setBrandInfoDialogOpen(true)}
+          variant="secondary"
+        >
+          <img
+            src={lastBrandInfo.url}
+            alt={lastBrandInfo.title}
+            className="inline-block h-auto w-[75px]"
+          />
+        </Button>
+      )}
+
+      <Dialog open={brandInfoDialogOpen && lastBrandInfo != null} onOpenChange={setBrandInfoDialogOpen}>
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[425px] lg:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>{lastBrandInfo?.title}</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 text-muted-foreground">
+            <p>{lastBrandInfo?.description}</p>
+            <p>{lastBrandInfo?.history}</p>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button">Закрыть</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen}>
         <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[425px] lg:max-w-[625px]">
