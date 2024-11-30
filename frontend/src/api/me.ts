@@ -10,17 +10,18 @@ export function useMe() {
     },
   })
 
-  const { data: me, isPending } = $api.useQuery(
+  const { data: me, isError } = $api.useQuery(
     'get',
     '/users/me',
     {},
     {
       refetchInterval: 1000 * 60 * 5, // 5 minutes
+      retry: false
     },
   )
 
   useEffect(() => {
-    if (!isPending && !me) {
+    if (isError && !me) {
       register({
         params: { query: {
           login: Math.random().toString(36).substring(7),
@@ -28,7 +29,7 @@ export function useMe() {
         } },
       })
     }
-  }, [isPending, me, register])
+  }, [isError, me, register])
 
   return me
 }
