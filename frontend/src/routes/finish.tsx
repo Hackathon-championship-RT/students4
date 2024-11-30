@@ -1,5 +1,6 @@
 import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
+import { FieldTemplate } from '@/components/mahjong/field-template.ts'
 import { getLevelById } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -108,6 +109,38 @@ function RouteComponent() {
             Сделано кликов:
             {' '}
             {clicks_num}
+          </div>
+
+          <div className="my-2 flex flex-row gap-2">
+            {(help_number_used === 0) && (
+              <Card className="max-w-40">
+                <CardHeader className="px-4 py-2">
+                  <CardTitle className="text-lg">
+                    Без подсказок!
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 py-2">
+                  <div className="aspect-square rounded-lg bg-gray-500">
+
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {(clicks_num === FieldTemplate.decode(level.template).tileCoords.length) && (
+              <Card className="max-w-40">
+                <CardHeader className="px-4 py-2">
+                  <CardTitle className="text-lg">
+                    Минимум кликов!
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 py-2">
+                  <div className="aspect-square rounded-lg bg-gray-500">
+
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <Separator className="my-2" />
