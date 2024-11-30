@@ -239,7 +239,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             items: [{ icon: <span className="iconify rotate-180 ph--sign-out" /> }],
             clickable: true,
             onClick: () => {
-              alert('not yet :)')
+              navigate({ to: '/' })
             },
           },
         ]}
