@@ -87,7 +87,9 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   })
 
   const [brandInfoDialogOpen, setBrandInfoDialogOpen] = useState(false)
-  const lastBrand = game.lastMove()?.[0].kind
+
+  const lastMove = game.lastMove()
+  const lastBrand = lastMove?.[0].kind
   const lastBrandInfo = lastBrand ? brands[lastBrand as keyof typeof brands] : undefined
 
   const [fieldMin, fieldMax] = game.dimensions()
@@ -136,6 +138,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
 
   useEffect(() => {
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       animatingElements.current.forEach(e => e.remove())
     }
   }, [])
@@ -290,7 +293,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           {
             id: 'undo',
             items: [{ icon: <span className="iconify ph--arrow-counter-clockwise" />, text: undoCount ? undoCount.toString() : '' }],
-            clickable: true,
+            clickable: lastMove != null,
             onClick: handleUndo,
           },
           {

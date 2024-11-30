@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils'
+import useSound from 'use-sound'
+import clickSound from './assets/click.mp3'
 import styles from './Mahjong.module.scss'
 
 export type Plate = {
@@ -35,13 +37,20 @@ function PlatesGroup({
   plates: Plate[]
   className?: string
 }) {
+  const [playClick] = useSound(clickSound)
+
   return (
     <div className={cn(styles.platesGroup, className)}>
       {plates.map(plate => (
         <div
           key={plate.id}
           className={cn(styles.plate, plate.clickable && styles.clickable)}
-          onClick={plate.onClick}
+          onClick={() => {
+            if (plate.clickable) {
+              playClick()
+              plate.onClick?.()
+            }
+          }}
           role={plate.clickable ? 'button' : undefined}
           tabIndex={plate.clickable ? 0 : undefined}
         >
