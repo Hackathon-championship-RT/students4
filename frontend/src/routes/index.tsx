@@ -67,6 +67,13 @@ function LevelCard({ level }: { level: LevelInfo }) {
             {isUnlocked ? 'Играть' : 'Заблокировано'}
           </Link>
         </Button>
+        {isUnlocked && (
+          <Button asChild disabled={!isUnlocked} size="icon" variant="ghost">
+            <Link to="/rating" search={{ level: level.id }}>
+              <span className="iconify ph--chart-bar-bold" />
+            </Link>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )
