@@ -22,7 +22,7 @@ export function Controls({
   return (
     <div className={cn(styles.controlsRoot, 'font-game', className)}>
       {platesLeading && <PlatesGroup plates={platesLeading} />}
-      {platesMiddle && <PlatesGroup plates={platesMiddle} className="grow justify-center" />}
+      {platesMiddle && <PlatesGroup plates={platesMiddle} className="grow" />}
       {platesTrailing && <PlatesGroup plates={platesTrailing} />}
     </div>
   )
