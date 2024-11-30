@@ -2,6 +2,12 @@
 
 Команда one-zero-eight.
 
+Развернутый проект: https://mahjong.innohassle.ru
+
+ДЕМО: [demo.mp4](./demo.mp4)
+
+ПРЕЗЕНТАЦИЯ: [presentation.pdf](./presentation.pdf)
+
 ## Инструкция по локальному запуску
 
 Протестировано на Ubuntu 22.04 с архитектурой amd64.
