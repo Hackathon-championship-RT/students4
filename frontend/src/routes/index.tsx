@@ -1,3 +1,5 @@
+import type { LevelInfo } from '@/components/mahjong/levels.ts'
+import { levels } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -20,34 +22,32 @@ function RouteComponent() {
           Сыграйте в увлекательную игру и ближе познакомьтесь с ведущими автомобильными компаниями мира
         </div>
         <div className="flex flex-row flex-wrap justify-center gap-8">
-          <LevelCard title="Уровень 1" isUnlocked />
-          <LevelCard title="Уровень 2" isUnlocked />
-          <LevelCard title="Уровень 3" isUnlocked={false} />
-          <LevelCard title="Уровень 4" isUnlocked={false} />
-          <LevelCard title="Уровень 5" isUnlocked={false} />
-          <LevelCard title="Уровень 6" isUnlocked={false} />
-          <LevelCard title="Уровень 7" isUnlocked={false} />
-          <LevelCard title="Уровень 8" isUnlocked={false} />
-          <LevelCard title="Уровень 9" isUnlocked={false} />
+          {levels.map((level, i) => (
+            <LevelCard key={i} level={level} isUnlocked={i < 2} />
+          ))}
         </div>
       </div>
     </main>
   )
 }
 
-function LevelCard({ title, isUnlocked }: { title: string, isUnlocked: boolean }) {
+function LevelCard({ level, isUnlocked }: { level: LevelInfo, isUnlocked: boolean }) {
   return (
     <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-emerald-500">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>72 кости, Российский автопром</CardDescription>
+        <CardTitle>{level.title}</CardTitle>
+        <CardDescription>
+          72 кости,
+          {' '}
+          {level.description}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="aspect-video min-w-[300px] rounded-xl bg-gray-900"></div>
       </CardContent>
       <CardFooter>
         <Button asChild disabled={!isUnlocked} variant={isUnlocked ? 'default' : 'secondary'}>
-          <Link to="/test" className="w-full">
+          <Link to="/play" search={{ level: level.id }} className="w-full">
             {isUnlocked ? 'Играть' : 'Заблокировано'}
           </Link>
         </Button>

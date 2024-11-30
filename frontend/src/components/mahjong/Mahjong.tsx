@@ -1,3 +1,4 @@
+import type { LevelInfo } from '@/components/mahjong/levels.ts'
 import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Tile as TileT } from './game'
 import { DotLottieWorkerReact } from '@lottiefiles/dotlottie-react'
@@ -7,14 +8,14 @@ import soundTilesMergedDelayed from './assets/bloop_300ms.mp3'
 import boomLottie from './assets/boom.lottie?arraybuffer'
 import soundTileSelect from './assets/pop-down.mp3'
 import { Controls } from './Controls'
-import { FieldTemplate, TEMPLATE_2 } from './field-template'
+import { FieldTemplate } from './field-template'
 import { Game } from './game'
 import styles from './Mahjong.module.scss'
 import { Tile } from './Tile'
 
 const LOTTIE_SIZE = 300
 
-export function Mahjong() {
+export function Mahjong({ level }: { level: LevelInfo }) {
   const [tiles, setTiles] = useState<TileT[]>([])
   const [selected, setSelected] = useState<TileT | null>(null)
   const [mergedAt, setMergedAt] = useState<{ x: number, y: number } | null>(null)
@@ -27,43 +28,9 @@ export function Mahjong() {
 
   const [game, _] = useState(() => {
     const g = Game.random(
-      FieldTemplate.decode(TEMPLATE_2),
+      FieldTemplate.decode(level.template),
       (a, b) => a === b,
-      [
-        'alfa-romeo',
-        'aston-martin',
-        'atom',
-        'audi',
-        'bentley',
-        'bmw',
-        'bugatti',
-        'byd',
-        'chevrolet',
-        'ferrari',
-        'fiat',
-        'ford',
-        'honda',
-        'hyundai',
-        'jeep',
-        'kia',
-        'lamborghini',
-        'land-rover',
-        'lexus',
-        'lucid-motors',
-        'mclaren',
-        'mercedes-benz',
-        'mini',
-        'morgan-motor-company',
-        'nio',
-        'porsche',
-        'rivian',
-        'rolls-royce',
-        'subaru',
-        'tesla',
-        'toyota',
-        'volkswagen',
-        'volvo',
-      ],
+      level.choices,
     )
     g.onTilesChange = (newTitles) => {
       setTiles(newTitles)
@@ -200,7 +167,7 @@ export function Mahjong() {
         platesLeading={[
           {
             id: 'title',
-            items: [{ icon: <span className="iconify rotate-180 ph--sign-out" /> }],
+            items: [{ icon: <span className="iconify ph--sign-out rotate-180" /> }],
             clickable: true,
             onClick: () => {
               alert('not yet :)')
