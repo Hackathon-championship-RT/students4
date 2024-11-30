@@ -46,7 +46,7 @@ function LevelCard({ level }: { level: LevelInfo }) {
   const isUnlocked = !level.requiredLevel || results?.some(result => result.level_name === level.requiredLevel || result.level_name === level.id)
 
   return (
-    <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-[#00D0C5]">
+    <Card className="max-w-2xl bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-[#00D0C5]">
       <CardHeader>
         <CardTitle>{level.title}</CardTitle>
         <CardDescription>
@@ -59,10 +59,10 @@ function LevelCard({ level }: { level: LevelInfo }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="aspect-video min-w-[300px] rounded-xl bg-[#191919]">
+        <div className="flex aspect-video h-[200px] items-center justify-center rounded-xl bg-[#191919]">
           <img
             src={`/preview/${level.id}.png`}
-            className="aspect-video max-w-[300px] rounded-xl object-contain"
+            className="aspect-video max-h-[200px] max-w-[300px] rounded-xl object-contain"
             onError={(e) => {
               e.currentTarget.style.display = 'none'
             }}
