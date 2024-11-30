@@ -81,11 +81,11 @@ export const TEMPLATE_1: EncodedTemplate = [
 export const TEMPLATE_2: EncodedTemplate = [
   // Layer 1
   [
-    [0, 1, 0, 1, 0],
+    [0, 1, 1, 1, 0],
     [1, 0, 0, 0, 1],
     [0, 1, 1, 1, 0],
     [1, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0],
   ],
 
   // Layer 2
