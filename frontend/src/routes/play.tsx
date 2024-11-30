@@ -20,9 +20,5 @@ function RouteComponent() {
     return <div>Invalid level id</div>
   }
 
-  return (
-    <div>
-      <Mahjong level={level} />
-    </div>
-  )
+  return (<Mahjong level={level} />)
 }

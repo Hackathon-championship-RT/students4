@@ -62,7 +62,7 @@ export class TileMap {
   }
 }
 
-function tileToKey(tile: Tile | Coordinate): string {
+export function tileToKey(tile: Tile | Coordinate): string {
   if ('x' in tile) {
     return `${tile.x},${tile.y},${tile.z}`
   }

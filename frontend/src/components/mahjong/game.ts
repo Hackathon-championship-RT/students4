@@ -271,6 +271,37 @@ export class Game {
     // If no new pair is found, return the fallbackPair (could be previousPair)
     return fallbackPair
   }
+
+  /**
+   * Returns the current dimensions of the game field as a tuple of two coordinates:
+   * - the minimum coordinate
+   * - the maximum coordinate
+   *
+   * Coordinates are calculated from the tiles that are in the game, so
+   * the returned dimensions are the smallest possible rectangle that
+   * contains all the tiles.
+   */
+  public dimensions(): [Coordinate, Coordinate] {
+    const tiles = this.tiles()
+
+    if (tiles.length === 0) {
+      return [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }]
+    }
+
+    const min: Coordinate = { x: Infinity, y: Infinity, z: Infinity }
+    const max: Coordinate = { x: -Infinity, y: -Infinity, z: -Infinity }
+
+    for (const tile of this.tiles()) {
+      min.x = Math.min(min.x, tile.coord.x)
+      min.y = Math.min(min.y, tile.coord.y)
+      min.z = Math.min(min.z, tile.coord.z)
+      max.x = Math.max(max.x, tile.coord.x)
+      max.y = Math.max(max.y, tile.coord.y + 1)
+      max.z = Math.max(max.z, tile.coord.z)
+    }
+
+    return [min, max]
+  }
 }
 
 export function coordsEqual(a: Coordinate, b: Coordinate): boolean {

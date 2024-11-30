@@ -71,3 +71,10 @@ html,
 body {
   background: #191919;
 }
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+}

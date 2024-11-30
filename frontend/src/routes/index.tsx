@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="h-full bg-black">
       <video className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-cover blur-0" autoPlay muted loop playsInline>
         <source src="https://atom.auto/assets/videos/main-background.mp4" type="video/mp4" />
       </video>
