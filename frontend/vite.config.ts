@@ -23,5 +23,12 @@ export default defineConfig({
   },
   server: {
     port: 3500,
+    proxy: {
+      '/api': {
+        target: 'https://mahjong.innohassle.ru/api',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
+    },
   },
 })

@@ -11,7 +11,7 @@
     "deps": "taze -wI minor",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "gen:api": "npx openapi-typescript http://mahjong.innohassle.ru:8000/openapi.json -o ./src/api/types.ts --root-types"
+    "gen:api": "npx openapi-typescript https://mahjong.innohassle.ru/api/openapi.json -o ./src/api/types.ts --root-types"
   },
   "dependencies": {
     "@iconify/tailwind": "^1.1.3",
