@@ -1,8 +1,11 @@
 import type { LevelInfo } from '@/components/mahjong/levels.ts'
+import { FieldTemplate } from '@/components/mahjong/field-template.ts'
 import { levels } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
+import { pluralize } from '@/lib/utils.ts'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -32,12 +35,20 @@ function RouteComponent() {
 }
 
 function LevelCard({ level, isUnlocked }: { level: LevelInfo, isUnlocked: boolean }) {
+  const diceCount = useMemo(() => {
+    const decoded = FieldTemplate.decode(level.template)
+    return decoded.tileCoords.length
+  }, [level])
+
   return (
     <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-emerald-500">
       <CardHeader>
         <CardTitle>{level.title}</CardTitle>
         <CardDescription>
-          72 кости,
+          {diceCount}
+          {' '}
+          {pluralize(diceCount, 'кость', 'кости', 'костей')}
+          ,
           {' '}
           {level.description}
         </CardDescription>
