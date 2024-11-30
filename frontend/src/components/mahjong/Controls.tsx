@@ -8,6 +8,7 @@ export type Plate = {
   items: { icon?: React.ReactNode, text?: React.ReactNode }[]
   onClick?: () => void
   clickable?: boolean
+  hideOnSmall?: boolean
 }
 
 export function Controls({
@@ -44,7 +45,7 @@ function PlatesGroup({
       {plates.map(plate => (
         <div
           key={plate.id}
-          className={cn(styles.plate, plate.clickable && styles.clickable)}
+          className={cn(styles.plate, plate.clickable && styles.clickable, plate.hideOnSmall && 'hidden sm:block')}
           onClick={() => {
             if (plate.clickable) {
               playClick()
@@ -56,8 +57,8 @@ function PlatesGroup({
         >
           {plate.items.map((item, i) => (
             <div key={i} className="flex items-center gap-2">
-              {item.icon && <div className={cn('h-fit text-[2rem] leading-[0]', styles.plateIcon)}>{item.icon}</div>}
-              {item.text && <div className={cn('h-fit text-[1.5rem] leading-none', styles.plateText)}>{item.text}</div>}
+              {item.icon && <div className={cn('h-fit text-[1rem] sm:text-[1.25rem] lg:text-[2rem] leading-[0]', styles.plateIcon)}>{item.icon}</div>}
+              {item.text && <div className={cn('h-fit text-[0.75rem] sm:text-[1rem] lg:text-[1.5rem] leading-none', styles.plateText)}>{item.text}</div>}
             </div>
           ))}
         </div>

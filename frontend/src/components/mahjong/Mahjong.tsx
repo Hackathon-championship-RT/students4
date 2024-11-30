@@ -259,7 +259,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   return (
     <div className="h-full px-2 pb-2 pt-[60px]">
       <Controls
-        className="fixed top-0 w-full px-16"
+        className="fixed inset-x-0 top-0 w-full md:px-16"
         platesLeading={[
           {
             id: 'exit',
@@ -300,8 +300,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           },
           {
             id: 'clicks',
-            items: [{ icon: <span className="iconify ph--cursor" />, text: clicksCount.toString() },
-            ],
+            items: [{ icon: <span className="iconify ph--cursor" />, text: clicksCount.toString() }],
+            hideOnSmall: true,
           },
 
         ]}
