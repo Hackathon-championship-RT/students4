@@ -1,9 +1,11 @@
 __all__ = ["user_repository"]
 
+import datetime
+
 from beanie import PydanticObjectId
 
-from src.modules.users.schemas import CreateUser
-from src.storages.mongo.users import User
+from src.modules.users.schemas import CreateUser, LevelLeaderboardResp
+from src.storages.mongo.users import User, LevelMetaInfo
 from fastapi import HTTPException
 
 # noinspection PyMethodMayBeStatic
@@ -33,9 +35,68 @@ class UserRepository:
     async def is_banned(self, user_id: str | PydanticObjectId) -> bool:
         return False
 
+    async def upsert_level_info(self, user_id: PydanticObjectId, level_name: str, time_passed: float, help_number_used: int, clicks_num: int) -> list[LevelMetaInfo] | None:
+        user = await User.get(user_id)
+        
+        if user.level_passed is None:
+            user.level_passed = [LevelMetaInfo(
+                level_name = level_name,
+                time_passed = time_passed, 
+                help_number_used = help_number_used,
+                clicks_num = clicks_num,
+                attempts = 1,
+            )]
+            await User.find_one(User.id == user.id).update(
+                {
+                    "$set": {User.level_passed: user.level_passed}
+                }
+            )
+            return user.level_passed
+    
+        found = False
+        
+        for lvl in user.level_passed:
+            if lvl.level_name == level_name:
+                lvl.attempts += 1
+                if lvl.time_passed > time_passed:
+                    lvl.time_passed = time_passed
+                found = True
+                break 
+        
+        if not found:
+            user.level_passed.append(LevelMetaInfo(
+                level_name = level_name,
+                time_passed = time_passed, 
+                help_number_used = help_number_used,
+                clicks_num = clicks_num,
+                attempts = 1,
+            ))
 
-    async def upsert_favorites(self, user_id: PydanticObjectId, favorite_items: list[PydanticObjectId]) -> list[PydanticObjectId]: 
-        user = await User.find_one(User.id == user_id).update({"$set": {"favorites": list(set(favorite_items))}})
-        return favorite_items
+        await User.find_one(User.id == user.id).update(
+                {
+                    "$set": {User.level_passed: user.level_passed}
+                }
+            )
+        return user.level_passed
+
+    async def get_levels_info(self, user_id: PydanticObjectId):
+        user = await User.get(user_id)
+        return user.level_passed 
+    
+    async def get_board_for_level(self, level_name: str) -> list[LevelLeaderboardResp]:
+        users = await User.find_all().to_list()
+        result: list[LevelLeaderboardResp] = []
+        for user in users:
+            if user.level_passed is None:
+                continue
+            for lvl in user.level_passed:
+                if lvl.level_name == level_name:
+                    result.append(
+                        LevelLeaderboardResp(
+                            user_id = user.id,
+                            lvlInfo = lvl,
+                        )
+                    )
+        return sorted(result, key=lambda x: x.lvlInfo.time_passed)
 
 user_repository: UserRepository = UserRepository()

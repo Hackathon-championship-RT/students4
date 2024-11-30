@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request
 from src.api.dependencies import USER_AUTH
 from src.api.exceptions import IncorrectCredentialsException
 from src.modules.users.repository import user_repository
-from src.modules.users.schemas import ViewUser, UpdateFavoriteReq
+from src.modules.users.schemas import ViewUser, AddResultReq, LevelLeaderboardResp
 from beanie import PydanticObjectId
 
 router = APIRouter(
@@ -69,6 +69,25 @@ async def logout(request: Request) -> None:
     request.session.clear()
     return None
 
-@router.put("/favorites")
-async def update_favorites(user: USER_AUTH, req: UpdateFavoriteReq) -> list[PydanticObjectId]:
-    return await user_repository.upsert_favorites(user_id=user.user_id, favorite_items=req.favorite_ids)
+@router.post(
+    "/result",
+    responses={200: {"description": "Result was added successfully"}}
+)
+async def add_result(request: AddResultReq, user: USER_AUTH):
+    """
+    
+    Add result to user; if not exist will create it 
+    """
+    return await user_repository.upsert_level_info(user.user_id, request.level_name, request.time_passed, request.help_number_used, request.clicks_num)
+
+@router.get(
+    "/result"
+)
+async def get_results(user: USER_AUTH):
+    return await user_repository.get_levels_info(user.user_id)
+
+@router.get(
+    "/result/{level_name}"
+)
+async def get_results_by_level_name(level_name: str) -> list[LevelLeaderboardResp]:
+    return await user_repository.get_board_for_level(level_name)

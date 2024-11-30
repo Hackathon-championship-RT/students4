@@ -14,8 +14,6 @@ from pywebpush import WebPushException, webpush
 
 from src.config import settings
 from src.logging_ import logger
-from src.modules.notifies.repository import notification_repository
-from src.modules.notifies.scheams import Filter
 from src.storages.mongo import document_models
 
 
