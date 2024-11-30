@@ -67,6 +67,7 @@ export const levels: LevelInfo[] = [
     template: ZEN_2,
     choices: allChoices,
     requiredLevel: 'zen-1',
+    story: 'Постепенно сложность уровней будет увеличиваться. На этом уровне больше производителей, и есть заблокированные фигуры - те, которые закрыты справа и слева другими фигурами.',
   },
   {
     id: 'zen-3',
@@ -75,6 +76,7 @@ export const levels: LevelInfo[] = [
     template: ZEN_3,
     choices: allChoices,
     requiredLevel: 'zen-2',
+    story: 'А на этом уровне несколько слоёв. Но мы уверены, что вы справитесь!',
   },
   {
     id: '1',

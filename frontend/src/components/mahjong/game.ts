@@ -51,6 +51,7 @@ export class Game {
     }
 
     const kinds: string[] = []
+    let byTwo = false
     if (availableCoords.length / 4 > allKinds.length) {
       kinds.push(...allKinds)
       for (let i = 0; i < availableCoords.length / 4 - allKinds.length; i++) {
@@ -63,23 +64,30 @@ export class Game {
     else {
       const leftoverKinds = [...allKinds]
       shuffleArray(leftoverKinds)
-      kinds.push(...leftoverKinds.slice(0, Math.ceil(availableCoords.length / 4)))
+      kinds.push(...leftoverKinds.slice(0, Math.ceil(availableCoords.length / 2)))
+      byTwo = true
     }
     console.log('kindCounter')
 
     const kindCounter: { [key: string]: number } = {}
     let current = 0
     for (const kind of kinds) {
-      if (availableCoords.length - current >= 4) {
-        kindCounter[kind] = (kindCounter[kind] || 0) + 4
-        current += 4
-      }
-      else if (availableCoords.length - current === 2) {
+      if (byTwo) {
         kindCounter[kind] = (kindCounter[kind] || 0) + 2
         current += 2
       }
       else {
-        throw new Error('Invalid number of available coordinates')
+        if (availableCoords.length - current >= 4) {
+          kindCounter[kind] = (kindCounter[kind] || 0) + 4
+          current += 4
+        }
+        else if (availableCoords.length - current === 2) {
+          kindCounter[kind] = (kindCounter[kind] || 0) + 2
+          current += 2
+        }
+        else {
+          throw new Error('Invalid number of available coordinates')
+        }
       }
     }
     console.log('kindCounter', kindCounter)
