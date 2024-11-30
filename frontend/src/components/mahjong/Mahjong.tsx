@@ -40,17 +40,6 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [elapsedTime, setElapsedTime] = useState(0)
   const [tiles, setTiles] = useState<TileT[]>([])
 
-  // sort tiles by z, then by x, then by y
-  tiles.sort((a, b) => {
-    if (a.coord.z !== b.coord.z) {
-      return a.coord.z - b.coord.z
-    }
-    if (a.coord.x !== b.coord.x) {
-      return a.coord.x - b.coord.x
-    }
-    return a.coord.y - b.coord.y
-  })
-
   const [selected, setSelected] = useState<TileT | null>(null)
   const [mergedAt, setMergedAt] = useState<{ x: number, y: number } | null>(null)
   const [hint, setHint] = useState<[TileT, TileT] | null>(null)
@@ -77,12 +66,13 @@ export function Mahjong({ level }: { level: LevelInfo }) {
       level.choices,
     )
     g.onTilesChange = (newTitles) => {
+      newTitles.sort(compareTiles)
       setTiles(newTitles)
     }
     g.onSelectedTileChange = (newSelected) => {
       setSelected(newSelected)
     }
-    setTiles(g.tiles())
+    setTiles(g.tiles().sort(compareTiles))
     return g
   })
 
@@ -486,4 +476,14 @@ function getScaleToFitField(
     fieldWidth,
     fieldHeight,
   }
+}
+
+function compareTiles(a: TileT, b: TileT) {
+  if (a.coord.z !== b.coord.z) {
+    return a.coord.z - b.coord.z
+  }
+  if (a.coord.x !== b.coord.x) {
+    return a.coord.x - b.coord.x
+  }
+  return a.coord.y - b.coord.y
 }
