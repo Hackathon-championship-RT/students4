@@ -2,6 +2,15 @@ import type { LevelInfo } from '@/components/mahjong/levels.ts'
 import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Coordinate, Tile as TileT } from './game'
 import { calculateScore } from '@/components/mahjong/score.ts'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { DotLottieWorkerReact } from '@lottiefiles/dotlottie-react'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
@@ -49,6 +58,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [clicksCount, setClicksCount] = useState(0)
   const [score, setScore] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
 
   const [playTilesMergedDelayed] = useSound(soundTilesMergedDelayed, { volume: 0.5 })
   const [playTileSelected] = useSound(soundTileSelect, { volume: 0.5 })
@@ -111,6 +122,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
         },
       })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiles])
 
   const updateScore = () => {
@@ -286,7 +298,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             items: [{ icon: <span className="iconify ph--info" /> }],
             clickable: true,
             onClick: () => {
-              alert('not yet :)')
+              setRulesDialogOpen(true)
             },
           },
         ]}
@@ -342,6 +354,29 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           ))}
         </div>
       </div>
+
+      <Dialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen}>
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[425px] lg:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>Правила игры</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 text-muted-foreground">
+            <p>Цель игры - убрать все плитки с поля. Чем быстрее вы это сделаете, тем больше очков вы получите.</p>
+            <p>Чтобы убрать плитки, выберите две открытые плитки, на которых изображены одинаковые марки.</p>
+            <p>Плитка считается открытой, если слева или справа от неё нет других плиток, а также если она не закрыта сверху.</p>
+            <p>Если вы застряли, вы можете воспользоваться подсказкой, перемешать плитки или отменить последний ход. Но учтите, что каждое использование этих функций уменьшает ваш счёт.</p>
+            <p>После выбора пары плиток с одинаковым брендом, в нижнем правом углу появится кнопка, нажав на которую вы сможете узнать историю и интересные факты о бренде.</p>
+            <p>Удачи!</p>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button">Продолжить</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
