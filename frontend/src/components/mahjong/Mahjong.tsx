@@ -1,6 +1,7 @@
 import type { LevelInfo } from '@/components/mahjong/levels.ts'
 import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Tile as TileT } from './game'
+import { calculateScore } from '@/components/mahjong/score.ts'
 import { DotLottieWorkerReact } from '@lottiefiles/dotlottie-react'
 import { useEffect, useRef, useState } from 'react'
 import useSound from 'use-sound'
@@ -16,10 +17,17 @@ import { Tile } from './Tile'
 const LOTTIE_SIZE = 300
 
 export function Mahjong({ level }: { level: LevelInfo }) {
+  const [startTime] = useState(() => Date.now())
+  const [elapsedTime, setElapsedTime] = useState(0)
   const [tiles, setTiles] = useState<TileT[]>([])
   const [selected, setSelected] = useState<TileT | null>(null)
   const [mergedAt, setMergedAt] = useState<{ x: number, y: number } | null>(null)
   const [hint, setHint] = useState<[TileT, TileT] | null>(null)
+  const [hintCount, setHintCount] = useState(0)
+  const [shuffleCount, setShuffleCount] = useState(0)
+  const [undoCount, setUndoCount] = useState(0)
+  const [clicksCount, setClicksCount] = useState(0)
+  const [score, setScore] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [playTilesMergedDelayed] = useSound(soundTilesMergedDelayed, { volume: 0.8 })
@@ -55,20 +63,38 @@ export function Mahjong({ level }: { level: LevelInfo }) {
     }
   }, [mergedAt, lottie])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsedTime(Date.now() - startTime)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [startTime])
+
+  const updateScore = () => {
+    setScore(calculateScore(level, hintCount, shuffleCount, undoCount, game))
+  }
+
   const handleUndo = () => {
     game.undoLastMove()
+    setUndoCount(c => c + 1)
+    updateScore()
   }
 
   const handleShuffle = () => {
     game.shuffle()
+    setShuffleCount(c => c + 1)
+    updateScore()
   }
 
   const handleHint = () => {
     setHint(game.hint(hint))
+    setHintCount(c => c + 1)
+    updateScore()
   }
 
   const handleTileClick = (t: TileT) => {
     const outcome = game.selectTileAt(t.coord)
+    setClicksCount(c => c + 1)
     switch (outcome) {
       case 'selected':
         playTileSelected()
@@ -147,6 +173,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             document.body.appendChild(bClone)
           }
         }
+        updateScore()
         break
       }
       case 'none':
@@ -187,28 +214,36 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           {
             id: 'time',
             items: [
-              { icon: <span className="iconify ph--timer-fill" />, text: '00:00' },
-              { icon: <span className="iconify ph--cards-fill" />, text: '123' },
+              // mm:ss
+              { icon: <span className="iconify ph--timer-fill" />, text: new Date(elapsedTime).toISOString().substring(14, 19) },
+              { icon: <span className="iconify ph--cards-fill" />, text: tiles.length.toString() },
+              { icon: <span className="iconify ph--trophy-fill" />, text: score.toString() },
             ],
           },
           {
             id: 'undo',
-            items: [{ icon: <span className="iconify ph--arrow-counter-clockwise" /> }],
+            items: [{ icon: <span className="iconify ph--arrow-counter-clockwise" />, text: undoCount ? undoCount.toString() : '' }],
             clickable: true,
             onClick: handleUndo,
           },
           {
             id: 'shuffle',
-            items: [{ icon: <span className="iconify ph--shuffle" /> }],
+            items: [{ icon: <span className="iconify ph--shuffle" />, text: shuffleCount ? shuffleCount.toString() : '' }],
             clickable: true,
             onClick: handleShuffle,
           },
           {
             id: 'hint',
-            items: [{ icon: <span className="iconify ph--lightbulb-fill" /> }],
+            items: [{ icon: <span className="iconify ph--lightbulb-fill" />, text: hintCount ? hintCount.toString() : '' }],
             clickable: true,
             onClick: handleHint,
           },
+          {
+            id: 'clicks',
+            items: [{ icon: <span className="iconify ph--cursor" />, text: clicksCount.toString() },
+            ],
+          },
+
         ]}
         platesTrailing={[
           {
