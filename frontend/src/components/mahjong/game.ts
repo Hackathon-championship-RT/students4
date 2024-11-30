@@ -189,9 +189,9 @@ export class Game {
     return this.moveHistory[this.moveHistory.length - 1] || null
   }
 
-  public undoLastMove(): void {
+  public undoLastMove(): boolean {
     if (this.moveHistory.length === 0) {
-      return
+      return false
     }
 
     const [tile1, tile2] = this.moveHistory[this.moveHistory.length - 1]
@@ -202,6 +202,7 @@ export class Game {
     this.selectedTile = null
     this.moveHistory.pop() // Remove the last move from history
     this.onTilesChange?.(this.tiles())
+    return true
   }
 
   public clone(): Game {

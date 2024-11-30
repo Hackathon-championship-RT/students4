@@ -118,9 +118,11 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   }
 
   const handleUndo = () => {
-    game.undoLastMove()
-    setUndoCount(c => c + 1)
-    updateScore()
+    const result = game.undoLastMove()
+    if (result) {
+      setUndoCount(c => c + 1)
+      updateScore()
+    }
   }
 
   const handleShuffle = () => {
