@@ -105,7 +105,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
         to: '/finish',
         search: {
           level: level.id,
-          time_passed: (Date.now() - startTime) / 1000,
+          time_passed: Math.round((Date.now() - startTime) / 1000),
           help_number_used: hintCount ?? 0,
           clicks_num: clicksCount ?? 0,
         },
