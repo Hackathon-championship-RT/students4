@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   return (
-    <main className="flex min-h-full bg-black">
+    <main className="flex min-h-full bg-black pb-8">
       <video className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-cover blur-0" autoPlay muted loop playsInline>
         <source src="https://atom.auto/assets/videos/main-background.mp4" type="video/mp4" />
       </video>
@@ -59,7 +59,7 @@ function LevelCard({ level }: { level: LevelInfo }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex aspect-video h-[200px] items-center justify-center rounded-xl bg-[#191919]">
+        <div className="flex aspect-video h-[200px] items-center justify-center rounded-xl border border-[rgba(255,255,255,0.075)] bg-[#191919] shadow-inner">
           <img
             src={`/preview/${level.id}.png`}
             className="aspect-video max-h-[200px] max-w-[300px] rounded-xl object-contain"
@@ -69,14 +69,14 @@ function LevelCard({ level }: { level: LevelInfo }) {
           />
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex gap-2">
         <Button asChild disabled={!isUnlocked} variant={isUnlocked ? 'default' : 'secondary'}>
           <Link to="/info" search={{ level: level.id }} className="w-full">
             {isUnlocked ? 'Играть' : 'Заблокировано'}
           </Link>
         </Button>
         {isUnlocked && (
-          <Button asChild disabled={!isUnlocked} size="icon" variant="ghost">
+          <Button asChild disabled={!isUnlocked} size="icon" className="shrink-0" variant="outline">
             <Link to="/rating" search={{ level: level.id }}>
               <span className="iconify ph--chart-bar-bold" />
             </Link>
