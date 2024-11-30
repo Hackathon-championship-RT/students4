@@ -333,6 +333,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
               brand={t.kind}
               closed={!game.isTileOpen(t.coord)}
               selected={t === selected}
+              hinted={hint?.includes(t) ?? false}
               onClick={() => handleTileClick(t)}
               coord={t.coord}
             />
