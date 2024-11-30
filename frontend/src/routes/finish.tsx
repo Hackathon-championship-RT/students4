@@ -1,7 +1,7 @@
 import { $api } from '@/api'
 import { useMe } from '@/api/me.ts'
 import { FieldTemplate } from '@/components/mahjong/field-template.ts'
-import { getLevelById } from '@/components/mahjong/levels.ts'
+import { getLevelById, levels } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import { Separator } from '@/components/ui/separator'
@@ -27,6 +27,8 @@ function RouteComponent() {
   const { level: levelId, time_passed, help_number_used, clicks_num, score } = Route.useSearch()
 
   const level = getLevelById(levelId)
+  const levelIndex = levels.findIndex(l => l.id === levelId)
+  const nextLevel = levels[levelIndex + 1]
 
   const me = useMe()
   const refSent = useRef(false)
@@ -75,7 +77,7 @@ function RouteComponent() {
   })
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Поздравляем!</CardTitle>
@@ -205,12 +207,20 @@ function RouteComponent() {
             ))}
           </div>
         </CardContent>
-        <CardFooter>
-          <Button asChild className="w-full">
+        <CardFooter className="gap-4">
+          <Button asChild className="w-full" variant="secondary">
             <Link to="/">
               В меню
             </Link>
           </Button>
+          {nextLevel
+          && (
+            <Button asChild className="w-full">
+              <Link to="/info" search={{ level: nextLevel.id }}>
+                Следующий уровень
+              </Link>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

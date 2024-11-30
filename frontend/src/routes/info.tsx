@@ -33,7 +33,7 @@ function RouteComponent() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button">Продолжить</Button>
+              <Button type="button">Начать</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
