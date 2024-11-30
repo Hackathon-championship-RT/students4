@@ -1,11 +1,13 @@
 import { $api } from '@/api'
+import { useMe } from '@/api/me.ts'
 import { getLevelById } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
-import { pluralize } from '@/lib/utils.ts'
+import { Separator } from '@/components/ui/separator'
+import { cn, pluralize } from '@/lib/utils.ts'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 
 export const Route = createFileRoute('/finish')({
   component: RouteComponent,
@@ -24,6 +26,7 @@ function RouteComponent() {
 
   const level = getLevelById(levelId)
 
+  const me = useMe()
   const refSent = useRef(false)
   const queryClient = useQueryClient()
   const { mutate: sendResult } = $api.useMutation('post', '/users/result', {
@@ -63,6 +66,10 @@ function RouteComponent() {
     return <div>Invalid level id</div>
   }
 
+  const resultsTable = [...(levelResults ?? [])].sort((a, b) => {
+    return a.lvlInfo.time_passed - b.lvlInfo.time_passed
+  })
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <Card className="max-w-4xl">
@@ -94,8 +101,35 @@ function RouteComponent() {
             {' '}
             {clicks_num}
           </div>
-          <div>
-            {JSON.stringify(levelResults)}
+
+          <Separator className="my-4" />
+
+          <div className="grid grid-cols-4 space-x-2">
+            <div className="flex items-center justify-center">#</div>
+            <div className="flex items-center justify-center">Секунд</div>
+            <div className="flex items-center justify-center">Подсказок</div>
+            <div className="flex items-center justify-center">Кликов</div>
+          </div>
+          <Separator className="my-2" />
+          <div className="grid grid-cols-4 gap-2">
+            {resultsTable.map((result, i) => (
+              <Fragment key={i}>
+                <div className="flex items-center justify-center gap-1">
+                  {me?.id === result.user_id ? '👤' : null}
+                  {i + 1 === 1 ? '🥇' : i + 1 === 2 ? '🥈' : i + 1 === 3 ? '🥉' : null}
+                  <div className={cn(
+                    'flex size-8 items-center justify-center rounded-full border p-1',
+                    i + 1 === 1 ? 'border-yellow-400' : i + 1 === 2 ? 'border-gray-400' : i + 1 === 3 ? 'border-yellow-700' : 'border-gray-200',
+                  )}
+                  >
+                    {i + 1}
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">{result.lvlInfo.time_passed}</div>
+                <div className="flex items-center justify-center">{result.lvlInfo.help_number_used}</div>
+                <div className="flex items-center justify-center">{result.lvlInfo.clicks_num}</div>
+              </Fragment>
+            ))}
           </div>
         </CardContent>
         <CardFooter>
