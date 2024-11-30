@@ -4,7 +4,7 @@ from src.api.dependencies import USER_AUTH
 from src.api.exceptions import IncorrectCredentialsException
 from src.modules.users.repository import user_repository
 from src.modules.users.schemas import ViewUser, AddResultReq, LevelLeaderboardResp
-from beanie import PydanticObjectId
+from src.storages.mongo.users import LevelMetaInfo
 
 router = APIRouter(
     prefix="/users",
@@ -73,7 +73,7 @@ async def logout(request: Request) -> None:
     "/result",
     responses={200: {"description": "Result was added successfully"}}
 )
-async def add_result(request: AddResultReq, user: USER_AUTH):
+async def add_result(request: AddResultReq, user: USER_AUTH) -> list[LevelMetaInfo] | None:
     """
     
     Add result to user; if not exist will create it 
@@ -83,7 +83,7 @@ async def add_result(request: AddResultReq, user: USER_AUTH):
 @router.get(
     "/result"
 )
-async def get_results(user: USER_AUTH):
+async def get_results(user: USER_AUTH) -> list[LevelMetaInfo] | None:
     return await user_repository.get_levels_info(user.user_id)
 
 @router.get(
