@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import type { FieldTemplate } from './field-template'
+import { TileMap } from '@/components/mahjong/tile-map.ts'
 
 export type Coordinate = { x: number, y: number, z: number }
 export type Coordinate2D = { x: number, y: number }
@@ -17,8 +19,8 @@ export type TileSelectOutcome =
   | 'merged'
 
 export class Game {
-  private inGameTiles: Tile[]
   private selectedTile: Tile | null
+  private tileMap: TileMap
   comparator: Comparator
   private moveHistory: Move[]
 
@@ -28,7 +30,7 @@ export class Game {
     public onSelectedTileChange?: (tile: Tile | null) => void,
     public onTilesChange?: (tiles: Tile[]) => void,
   ) {
-    this.inGameTiles = tiles
+    this.tileMap = new TileMap(tiles)
     this.selectedTile = null
     this.comparator = comparator
     this.moveHistory = []
@@ -40,6 +42,8 @@ export class Game {
     allKinds: string[],
     maxRetries = 100,
   ): Game {
+    console.log('random')
+
     const availableCoords = [...template.tileCoords]
 
     if (availableCoords.length % 2 !== 0) {
@@ -61,42 +65,73 @@ export class Game {
       shuffleArray(leftoverKinds)
       kinds.push(...leftoverKinds.slice(0, Math.ceil(availableCoords.length / 4)))
     }
+    console.log('kindCounter')
+
+    const kindCounter: { [key: string]: number } = {}
+    let current = 0
+    for (const kind of kinds) {
+      if (availableCoords.length - current >= 4) {
+        kindCounter[kind] = (kindCounter[kind] || 0) + 4
+        current += 4
+      }
+      else if (availableCoords.length - current === 2) {
+        kindCounter[kind] = (kindCounter[kind] || 0) + 2
+        current += 2
+      }
+      else {
+        throw new Error('Invalid number of available coordinates')
+      }
+    }
+    console.log('kindCounter', kindCounter)
 
     for (let retry = 0; retry < maxRetries; retry++) {
-      const tiles: Tile[] = []
-      for (const kind of kinds) {
-        if (availableCoords.length - tiles.length >= 4) {
-          for (let i = 0; i < 4; i++) {
-            tiles.push({ kind, coord: null as any })
-          }
-        }
-        else if (availableCoords.length - tiles.length === 2) {
-          for (let i = 0; i < 2; i++) {
-            tiles.push({ kind, coord: null as any })
-          }
-        }
-        else {
-          throw new Error('Invalid number of available coordinates')
-        }
-      }
-      // Shuffle tiles
-      shuffleArray(tiles)
+      console.log('retry', retry)
+      const currentTryCounter = { ...kindCounter }
+      const currentAvailableCoords = [...availableCoords]
+      const tileMap: TileMap = new TileMap([])
 
-      // Shuffle coordinates
-      shuffleArray(availableCoords)
+      // Try to fill the field with tiles
+      console.profile('fillField')
+      let innerTries = currentAvailableCoords.length
+      console.log('currentAvailableCoords.length', currentAvailableCoords.length)
 
-      // Assign tiles to coordinates
-      for (let i = 0; i < tiles.length; i++) {
-        tiles[i].coord = availableCoords[i]
+      while (currentAvailableCoords.length > 0 && innerTries-- > 0) {
+        console.log('innerTries', innerTries)
+        // Choose random kind from currentTryCounter
+        const kind = Object.keys(currentTryCounter)[Math.floor(Math.random() * Object.keys(currentTryCounter).length)]
+
+        // find a pair of coordinates for the kind
+        const coords = getTwoRandomElements(currentAvailableCoords)
+
+        if (!coords) {
+          break
+        }
+
+        tileMap.set({ kind, coord: coords[0] })
+        tileMap.set({ kind, coord: coords[1] })
+
+        if (!tileMap.openExists()) {
+          tileMap.delete({ kind, coord: coords[0] })
+          tileMap.delete({ kind, coord: coords[1] })
+          continue
+        }
+
+        currentTryCounter[kind] = currentTryCounter[kind] -= 2
+        if (currentTryCounter[kind] === 0) {
+          delete currentTryCounter[kind]
+        }
+
+        currentAvailableCoords.splice(currentAvailableCoords.indexOf(coords[0]), 1)
+        currentAvailableCoords.splice(currentAvailableCoords.indexOf(coords[1]), 1)
       }
+      console.profileEnd('fillField')
 
       // Create Game instance
-      const game = new Game(tiles, comparator)
-
-      // Check solvability
-      const visited = new Set<string>()
-      if (isSolvable(game, visited)) {
-        return game
+      if (currentAvailableCoords.length === 0) {
+        const game = new Game(tileMap.tiles(), comparator)
+        if (isSolvable(game, new Set<string>())) {
+          return game
+        }
       }
     }
 
@@ -104,18 +139,11 @@ export class Game {
   }
 
   public tiles(): Tile[] {
-    return this.inGameTiles
+    return this.tileMap.tiles()
   }
 
   public selectTileAt(exactCoord: Coordinate): TileSelectOutcome {
-    const tile = this.inGameTiles.find(tile => coordsEqual(tile.coord, exactCoord))
-    if (!tile)
-      return 'none'
-    return this.selectTile(tile)
-  }
-
-  public selectTileAtPoint(coord: Coordinate2D): TileSelectOutcome {
-    const tile = this.tilesAt2D(coord)[0]
+    const tile = this.tiles().find(tile => coordsEqual(tile.coord, exactCoord))
     if (!tile)
       return 'none'
     return this.selectTile(tile)
@@ -129,7 +157,7 @@ export class Game {
         return 'unselected'
       }
       else if (this.comparator(this.selectedTile.kind, tile.kind) && this.isTileOpen(tile.coord)) {
-        this.removePairTiles(this.selectedTile.coord, tile.coord)
+        this.removePairTiles(this.selectedTile, tile)
         this.moveHistory.push([this.selectedTile, tile]) // Track the move
         this.selectedTile = null
         this.onSelectedTileChange?.(this.selectedTile)
@@ -146,56 +174,15 @@ export class Game {
     return 'none'
   }
 
-  public removePairTiles(coord1: Coordinate, coord2: Coordinate): void {
-    this.inGameTiles = this.inGameTiles.filter(t => !coordsEqual(t.coord, coord1) && !coordsEqual(t.coord, coord2))
-    this.onTilesChange?.(this.inGameTiles)
-  }
-
-  public tilesAt2D(coord: Coordinate2D): Tile[] {
-    return this.inGameTiles
-      .filter(t => t.coord.x === coord.x && (t.coord.y === coord.y || t.coord.y + 1 === coord.y))
-      .sort((a, b) => b.coord.z - a.coord.z)
-  }
-
-  /** Returns a tile at field coordinate. */
-  public tileAt({ x, y, z }: Coordinate): Tile | null {
-    // @todo Make better than O(n)
-    for (const tile of this.inGameTiles) {
-      if (tile.coord.z === z && tile.coord.x === x && (tile.coord.y === y || tile.coord.y + 1 === y)) {
-        return tile
-      }
-    }
-    return null
+  public removePairTiles(tile1: Tile, tile2: Tile): void {
+    this.tileMap.delete(tile1)
+    this.tileMap.delete(tile2)
+    this.onTilesChange?.(this.tiles())
   }
 
   /** Returns whether the tile at the given field coordinate is open. */
   public isTileOpen({ x, y, z }: Coordinate): boolean {
-    let occupiedLeft = false
-    let occupiedRight = false
-
-    // @todo Make better than O(n)
-    for (const tile of this.inGameTiles) {
-      if (tile.coord.z < z)
-        continue
-
-      if (tile.coord.z > z) {
-        // If lies on top -> closed
-        if (tile.coord.x === x && (Math.abs(tile.coord.y - y) <= 1)) {
-          return false
-        }
-      }
-
-      if (tile.coord.z === z) {
-        if (tile.coord.x - 1 === x && (Math.abs(tile.coord.y - y) <= 1)) {
-          occupiedLeft = true
-        }
-        else if (tile.coord.x + 1 === x && (Math.abs(tile.coord.y - y) <= 1)) {
-          occupiedRight = true
-        }
-      }
-    }
-
-    return !occupiedLeft || !occupiedRight
+    return this.tileMap.isOpen({ x, y, z })
   }
 
   public lastMove(): Move | null {
@@ -210,15 +197,17 @@ export class Game {
     const [tile1, tile2] = this.moveHistory[this.moveHistory.length - 1]
 
     // Restore the previous state of the game (before the last move)
-    this.inGameTiles = [...this.inGameTiles, tile1, tile2]
+    this.tileMap.set(tile1)
+    this.tileMap.set(tile2)
     this.selectedTile = null
     this.moveHistory.pop() // Remove the last move from history
-    this.onTilesChange?.(this.inGameTiles)
+    this.onTilesChange?.(this.tiles())
   }
 
   public clone(): Game {
+    const _tiles = this.tiles().slice()
     return new Game(
-      this.inGameTiles.map(tile => ({ ...tile, coord: { ...tile.coord } })),
+      _tiles,
       this.comparator,
       this.onSelectedTileChange,
       this.onTilesChange,
@@ -269,7 +258,7 @@ function isSolvable(game: Game, visited: Set<string>): boolean {
       if (game.comparator(tileA.kind, tileB.kind)) {
         // Try removing these tiles
         const newGame = game.clone()
-        newGame.removePairTiles(tileA.coord, tileB.coord)
+        newGame.removePairTiles(tileA, tileB)
 
         if (isSolvable(newGame, visited)) {
           return true
@@ -280,4 +269,20 @@ function isSolvable(game: Game, visited: Set<string>): boolean {
 
   // If no moves lead to a solution, return false
   return false
+}
+
+function getTwoRandomElements<T>(array: T[]): [T, T] | null {
+  if (array.length < 2) {
+    console.error('Array must have at least two elements')
+    return null
+  }
+
+  const firstIndex = Math.floor(Math.random() * array.length)
+  let secondIndex: number
+
+  do {
+    secondIndex = Math.floor(Math.random() * array.length)
+  } while (secondIndex === firstIndex)
+
+  return [array[firstIndex], array[secondIndex]]
 }
