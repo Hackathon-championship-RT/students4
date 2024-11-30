@@ -1,9 +1,10 @@
 import type { CSSProperties } from 'react'
 import type { Coordinate } from './game'
 import { cn } from '@/lib/utils'
+import { memo } from 'react'
 import styles from './Mahjong.module.scss'
 
-export function Tile({
+function _({
   className,
   brand,
   closed,
@@ -54,3 +55,5 @@ export function Tile({
     </div>
   )
 }
+
+export const Tile = memo(_)
