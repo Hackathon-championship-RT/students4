@@ -43,7 +43,6 @@ const MAX_SCALE = 1.25
 export function Mahjong({ level }: { level: LevelInfo }) {
   const navigate = useNavigate()
   const [startTime] = useState(() => Date.now())
-  const [elapsedTime, setElapsedTime] = useState(0)
   const [tiles, setTiles] = useState<TileT[]>([])
 
   const [selected, setSelected] = useState<TileT | null>(null)
@@ -110,13 +109,6 @@ export function Mahjong({ level }: { level: LevelInfo }) {
       lottie?.stop()
     }
   }, [mergedAt, lottie])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsedTime(Date.now() - startTime)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [startTime])
 
   useEffect(() => {
     if (tiles.length === 0) {
@@ -281,7 +273,6 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             id: 'time',
             items: [
               // mm:ss
-              { icon: <span className="iconify ph--timer-fill" />, text: new Date(elapsedTime).toISOString().substring(14, 19) },
               { icon: <span className="iconify ph--cards-fill" />, text: tiles.length.toString() },
               { icon: <span className="iconify ph--trophy-fill" />, text: score.toString() },
             ],
@@ -321,6 +312,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             },
           },
         ]}
+        startTime={startTime}
       />
 
       <div

@@ -1,10 +1,34 @@
 import type { CSSProperties } from 'react'
 import type { Coordinate } from './game'
 import { cn } from '@/lib/utils'
-import { memo } from 'react'
+import React from 'react'
 import styles from './Mahjong.module.scss'
 
-function _({
+function _BrandTile({ brand }: { brand: string }) {
+  const imgPath = `/logos/${brand}-logo.png`
+  return (
+    <>
+      <span data-glass="" />
+      <span data-noise="" />
+      <div
+        data-logo=""
+        style={{
+          '--img': `url('${imgPath}')`,
+        } as CSSProperties}
+      >
+        <img
+          src={imgPath}
+          alt={brand}
+        />
+      </div>
+      <span data-bg="" />
+    </>
+  )
+}
+
+const BrandTile = React.memo(_BrandTile)
+
+export function Tile({
   className,
   brand,
   closed,
@@ -21,7 +45,6 @@ function _({
   coord: Coordinate
   onClick?: () => void
 }) {
-  const imgPath = `/logos/${brand}-logo.png`
   return (
     <div
       className={cn(styles.tile, closed && styles.closed, selected && styles.selected, hinted && styles.hinted, className)}
@@ -36,24 +59,9 @@ function _({
         data-wrapper=""
         onClick={onClick}
       >
-        <span data-glass="" />
-        <span data-noise="" />
-        <div
-          data-logo=""
-          style={{
-            '--img': `url('${imgPath}')`,
-          } as CSSProperties}
-        >
-          <img
-            src={imgPath}
-            alt={brand}
-          />
-        </div>
-        <span data-bg="" />
+        <BrandTile brand={brand} />
       </div>
       <span data-back="" />
     </div>
   )
 }
-
-export const Tile = memo(_)
