@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { addIconSelectors } from '@iconify/tailwind'
 import animate from 'tailwindcss-animate'
 
 const config: Config = {
@@ -9,6 +10,9 @@ const config: Config = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      fontFamily: {
+        game: '"Tektur", sans-serif',
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -54,7 +58,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [animate],
+  plugins: [
+    animate,
+    addIconSelectors(['ph']),
+  ],
   darkMode: ['class'],
 }
 export default config

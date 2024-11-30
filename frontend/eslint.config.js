@@ -7,6 +7,7 @@ export default antfu(
     react: true,
     ignores: [
       'src/api/types.ts',
+      'src/components/ui/**/*',
       'src/**/*.gen.ts',
     ],
     plugins: [],

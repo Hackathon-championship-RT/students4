@@ -6,6 +6,7 @@ import useSound from 'use-sound'
 import soundTilesMergedDelayed from './assets/bloop_300ms.mp3'
 import boomLottie from './assets/boom.lottie?arraybuffer'
 import soundTileSelect from './assets/pop-down.mp3'
+import { Controls } from './Controls'
 import { FieldTemplate, TEMPLATE_2 } from './field-template'
 import { Game } from './game'
 import styles from './Mahjong.module.scss'
@@ -78,8 +79,8 @@ export function Mahjong() {
     if (mergedAt) {
       lottie?.setFrame(0)
         .then(() => lottie.resize())
-        .then(() => lottie?.unfreeze())
-        .then(() => lottie?.play())
+        .then(() => lottie.unfreeze())
+        .then(() => lottie.play())
     }
     else {
       lottie?.stop()
@@ -191,16 +192,56 @@ export function Mahjong() {
 
   return (
     <div
-      className="relative mt-8"
+      className="relative mt-[100px]"
       ref={containerRef}
     >
-      <button
-        className="absolute left-4 top-4 rounded bg-red-500 p-2 text-white"
-        onClick={handleUndo}
-        type="button"
-      >
-        Undo Move
-      </button>
+      <Controls
+        className="fixed top-0 w-full px-16"
+        platesLeading={[
+          {
+            id: 'title',
+            items: [{ icon: <span className="iconify rotate-180 ph--sign-out" /> }],
+            clickable: true,
+            onClick: () => {
+              alert('not yet :)')
+            },
+          },
+        ]}
+        platesMiddle={[
+          {
+            id: 'time',
+            items: [
+              { icon: <span className="iconify ph--timer-fill" />, text: '00:00' },
+              { icon: <span className="iconify ph--cards-fill" />, text: '123' },
+            ],
+          },
+          {
+            id: 'undo',
+            items: [{ icon: <span className="iconify ph--arrow-counter-clockwise" /> }],
+            clickable: true,
+            onClick: handleUndo,
+          },
+          {
+            id: 'undo',
+            items: [{ icon: <span className="iconify ph--shuffle" /> }],
+            clickable: true,
+            onClick: () => {
+              alert('not yet :)')
+            },
+          },
+        ]}
+        platesTrailing={[
+          {
+            id: 'title',
+            items: [{ icon: <span className="iconify ph--info" /> }],
+            clickable: true,
+            onClick: () => {
+              alert('not yet :)')
+            },
+          },
+        ]}
+      />
+
       <div
         className={styles.boom}
         style={mergedAt
