@@ -71,36 +71,23 @@ function RouteComponent() {
           <div className="grid grid-cols-3 gap-2">
             {resultsTable.map((result, i) => (
               <Fragment key={i}>
-                <div className="flex items-center justify-center gap-1">
-                  {me?.id === result.user_id ? '👤' : null}
+                <div className={cn(
+                  'flex items-center justify-center gap-1 rounded-full p-1',
+                  me?.id === result.user_id ? 'bg-yellow-500/25' : '',
+                )}
+                >
                   {i + 1 === 1
                     ? '🥇'
                     : i + 1 === 2
                       ? '🥈'
                       : i + 1 === 3
                         ? '🥉'
-                        : null}
-                  <div
-                    className={cn(
-                      'flex size-8 items-center justify-center rounded-full border p-1',
-                      i + 1 === 1
-                        ? 'border-yellow-400'
-                        : i + 1 === 2
-                          ? 'border-gray-400'
-                          : i + 1 === 3
-                            ? 'border-yellow-700'
-                            : 'border-gray-200',
-                    )}
-                  >
-                    {i + 1}
-                  </div>
+                        : (
+                            i + 1
+                          )}
                 </div>
-                <div className="flex items-center justify-center">
-                  {result.lvlInfo.clicks_num}
-                </div>
-                <div className="flex items-center justify-center">
-                  {result.lvlInfo.time_passed}
-                </div>
+                <div className="flex items-center justify-center font-bold">{result.lvlInfo.clicks_num}</div>
+                <div className="flex items-center justify-center">{Math.round(result.lvlInfo.time_passed)}</div>
               </Fragment>
             ))}
           </div>

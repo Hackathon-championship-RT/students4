@@ -88,16 +88,16 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <div>
+            Баллы:
+            {' '}
+            {score}
+          </div>
+          <div>
             Время:
             {' '}
             {time_passed}
             {' '}
             {pluralize(time_passed ?? 0, 'секунда', 'секунды', 'секунд')}
-          </div>
-          <div>
-            Очки:
-            {' '}
-            {score}
           </div>
           <div>
             Использовано подсказок:
@@ -110,7 +110,7 @@ function RouteComponent() {
             {clicks_num}
           </div>
 
-          <Separator className="my-4" />
+          <Separator className="my-2" />
 
           <div className="grid grid-cols-3 space-x-2">
             <div className="flex items-center justify-center">#</div>
@@ -121,19 +121,23 @@ function RouteComponent() {
           <div className="grid grid-cols-3 gap-2">
             {resultsTable.map((result, i) => (
               <Fragment key={i}>
-                <div className="flex items-center justify-center gap-1">
-                  {me?.id === result.user_id ? '👤' : null}
-                  {i + 1 === 1 ? '🥇' : i + 1 === 2 ? '🥈' : i + 1 === 3 ? '🥉' : null}
-                  <div className={cn(
-                    'flex size-8 items-center justify-center rounded-full border p-1',
-                    i + 1 === 1 ? 'border-yellow-400' : i + 1 === 2 ? 'border-gray-400' : i + 1 === 3 ? 'border-yellow-700' : 'border-gray-200',
-                  )}
-                  >
-                    {i + 1}
-                  </div>
+                <div className={cn(
+                  'flex items-center justify-center gap-1 rounded-full p-1',
+                  me?.id === result.user_id ? 'bg-yellow-500/25' : '',
+                )}
+                >
+                  {i + 1 === 1
+                    ? '🥇'
+                    : i + 1 === 2
+                      ? '🥈'
+                      : i + 1 === 3
+                        ? '🥉'
+                        : (
+                            i + 1
+                          )}
                 </div>
-                <div className="flex items-center justify-center">{result.lvlInfo.clicks_num}</div>
-                <div className="flex items-center justify-center">{result.lvlInfo.time_passed}</div>
+                <div className="flex items-center justify-center font-bold">{result.lvlInfo.clicks_num}</div>
+                <div className="flex items-center justify-center">{Math.round(result.lvlInfo.time_passed)}</div>
               </Fragment>
             ))}
           </div>
