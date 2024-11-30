@@ -174,7 +174,7 @@ export const levels: LevelInfo[] = [
     requiredLevel: 'zen-5',
   },
   {
-    id: 'turtle',
+    id: 'modern',
     title: 'Уровень 7',
     description: 'Современность (2020+)',
     template: TURTLE,
@@ -193,6 +193,16 @@ export const levels: LevelInfo[] = [
     story: 'Мы наблюдаем новую революцию в автомобильной индустрии. Китайский BYD стал крупнейшим производителем электромобилей в мире, российский ATOM стремится занять свое место на рынке электромобилей, Tesla продолжает инновации, а NIO расширяет присутствие в Европе. Lucid Motors и Rivian представляют новое поколение электромобилей премиум-класса, в то время как традиционные производители Porsche, Volkswagen, BMW и Hyundai активно развивают свои электрические линейки. Современные логотипы этих компаний отражают дух цифровой эпохи.',
     requiredLevel: 'zen-7',
   },
+  {
+    id: 'turtle',
+    title: 'Черепаха',
+    description: 'Все вместе',
+    template: TURTLE,
+    choices: allChoices,
+    story: 'А теперь поиграем в Маджонг!',
+    requiredLevel: 'modern',
+  },
+
 ]
 
 export function getLevelById(id: string | undefined): LevelInfo | undefined {
