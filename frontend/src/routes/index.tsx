@@ -19,6 +19,9 @@ function RouteComponent() {
         <source src="https://atom.auto/assets/videos/main-background.mp4" type="video/mp4" />
       </video>
       <div className="relative">
+        <div className="mt-8 flex justify-center">
+          <img src="/favicon.png" className="w-48" />
+        </div>
         <h1 className="mb-8 mt-6 text-center text-4xl font-bold">
           АВТОМАДЖИК
         </h1>
