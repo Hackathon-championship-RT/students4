@@ -59,7 +59,15 @@ function LevelCard({ level }: { level: LevelInfo }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="aspect-video min-w-[300px] rounded-xl bg-gray-900"></div>
+        <div className="aspect-video min-w-[300px] rounded-xl bg-[#191919]">
+          <img
+            src={`/preview/${level.id}.png`}
+            className="aspect-video max-w-[300px] rounded-xl object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        </div>
       </CardContent>
       <CardFooter>
         <Button asChild disabled={!isUnlocked} variant={isUnlocked ? 'default' : 'secondary'}>
