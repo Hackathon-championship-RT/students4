@@ -2,7 +2,7 @@ import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Coordinate, Tile as TileT } from './game'
 import { $api } from '@/api'
 import { useMe } from '@/api/me'
-import { getLevelById, type LevelInfo } from '@/components/mahjong/levels.ts'
+import { getLevelById, type LevelInfo, levels } from '@/components/mahjong/levels.ts'
 import { calculateScore } from '@/components/mahjong/score.ts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
@@ -426,7 +426,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
       </Dialog>
 
       <Dialog open={finishResults !== null} onOpenChange={() => {}}>
-        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[425px] lg:max-w-[625px]" noCloseIcon>
+        <DialogContent className="max-h-[calc(100vh-2rem)] min-w-0 max-w-[min(100%-24px,425px)] overflow-y-auto rounded-lg lg:max-w-[625px]" noCloseIcon>
           <DialogHeader>
             <DialogTitle>Поздравляем!</DialogTitle>
           </DialogHeader>
@@ -451,6 +451,8 @@ function Results({
   score?: number
 }) {
   const level = getLevelById(levelId)
+  const levelIndex = levels.findIndex(l => l.id === levelId)
+  const nextLevel = levels[levelIndex + 1]
 
   const me = useMe()
   const refSent = useRef(false)
@@ -540,7 +542,7 @@ function Results({
                 </div>
               </CardContent>
               <CardHeader className="px-4 py-2">
-                <CardTitle className="text-center text-lg">
+                <CardTitle className="text-center text-sm lg:text-lg">
                   Без подсказок!
                 </CardTitle>
               </CardHeader>
@@ -555,7 +557,7 @@ function Results({
                 </div>
               </CardContent>
               <CardHeader className="px-4 py-2">
-                <CardTitle className="text-center text-lg">
+                <CardTitle className="text-center text-sm lg:text-lg">
                   Без лишних кликов!
                 </CardTitle>
               </CardHeader>
@@ -570,7 +572,7 @@ function Results({
                 </div>
               </CardContent>
               <CardHeader className="px-4 py-2">
-                <CardTitle className="text-center text-lg">
+                <CardTitle className="text-center text-sm lg:text-lg">
                   Очень быстро!
                 </CardTitle>
               </CardHeader>
@@ -585,7 +587,7 @@ function Results({
                 </div>
               </CardContent>
               <CardHeader className="px-4 py-2">
-                <CardTitle className="text-center text-lg">
+                <CardTitle className="text-center text-sm lg:text-lg">
                   Идеально!
                 </CardTitle>
               </CardHeader>
@@ -625,8 +627,15 @@ function Results({
           ))}
         </div>
       </CardContent>
-      <CardFooter>
-        <Button asChild className="w-full">
+      <CardFooter className="flex gap-2">
+        {nextLevel && (
+          <Button asChild className="w-full">
+            <Link to="/info" search={{ level: nextLevel.id }}>
+              Следующий уровень
+            </Link>
+          </Button>
+        )}
+        <Button asChild className="w-full" variant="outline">
           <Link to="/">
             В меню
           </Link>

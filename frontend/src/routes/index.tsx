@@ -22,10 +22,10 @@ function RouteComponent() {
         <div className="mt-8 flex justify-center">
           <img src="/favicon.png" className="w-48" />
         </div>
-        <h1 className="mb-8 mt-6 text-center text-4xl font-bold">
+        <h1 className="mb-8 mt-6 text-center text-3xl font-bold lg:text-4xl">
           АВТОМАДЖИК
         </h1>
-        <div className="mb-8 mt-6 px-4 text-center text-xl font-semibold">
+        <div className="mb-8 mt-6 px-4 text-center text-lg text-muted-foreground lg:text-xl">
           Сыграйте в увлекательную игру и ближе познакомьтесь с ведущими автомобильными компаниями мира
         </div>
         <div className="flex flex-row flex-wrap justify-center gap-8">
@@ -49,8 +49,8 @@ function LevelCard({ level }: { level: LevelInfo }) {
   const isUnlocked = !level.requiredLevel || results?.some(result => result.level_name === level.requiredLevel || result.level_name === level.id)
 
   return (
-    <Card className="max-w-2xl bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-[#00D0C5]">
-      <CardHeader>
+    <Card className="flex max-w-[min(300px,100%-24px)] flex-col bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-[#00D0C5]">
+      <CardHeader className="grow">
         <CardTitle>{level.title}</CardTitle>
         <CardDescription>
           {diceCount}
@@ -62,7 +62,7 @@ function LevelCard({ level }: { level: LevelInfo }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mx-auto flex aspect-video h-[175px] items-center justify-center rounded-xl border border-[rgba(255,255,255,0.075)] bg-[#191919] p-2 shadow-inner lg:h-[200px]">
+        <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-[rgba(255,255,255,0.075)] bg-[#191919] p-2 shadow-inner">
           <img
             src={`/preview/${level.id}.png`}
             className="size-full rounded-xl object-contain object-center"
