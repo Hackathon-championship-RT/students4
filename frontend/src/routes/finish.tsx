@@ -13,10 +13,10 @@ export const Route = createFileRoute('/finish')({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      level: (search.level as string | undefined) || undefined,
-      time_passed: (search.time_passed as number | undefined) || undefined,
-      help_number_used: (search.help_number_used as number | undefined) || undefined,
-      clicks_num: (search.clicks_num as number | undefined) || undefined,
+      level: (search.level as string | undefined) ?? undefined,
+      time_passed: (search.time_passed as number | undefined) ?? undefined,
+      help_number_used: (search.help_number_used as number | undefined) ?? undefined,
+      clicks_num: (search.clicks_num as number | undefined) ?? undefined,
     }
   },
 })

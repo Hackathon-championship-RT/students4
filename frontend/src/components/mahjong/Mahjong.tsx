@@ -3,6 +3,7 @@ import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Coordinate, Tile as TileT } from './game'
 import { calculateScore } from '@/components/mahjong/score.ts'
 import { DotLottieWorkerReact } from '@lottiefiles/dotlottie-react'
+import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import useSound from 'use-sound'
 import soundTilesMergedDelayed from './assets/bloop_300ms.mp3'
@@ -24,6 +25,7 @@ const ORIGINAL_OFFSET = 8
 const MAX_SCALE = 1.25
 
 export function Mahjong({ level }: { level: LevelInfo }) {
+  const navigate = useNavigate()
   const [startTime] = useState(() => Date.now())
   const [elapsedTime, setElapsedTime] = useState(0)
   const [tiles, setTiles] = useState<TileT[]>([])
@@ -96,6 +98,20 @@ export function Mahjong({ level }: { level: LevelInfo }) {
     }, 1000)
     return () => clearInterval(interval)
   }, [startTime])
+
+  useEffect(() => {
+    if (tiles.length === 0) {
+      navigate({
+        to: '/finish',
+        search: {
+          level: level.id,
+          time_passed: (Date.now() - startTime) / 1000,
+          help_number_used: hintCount ?? 0,
+          clicks_num: clicksCount ?? 0,
+        },
+      })
+    }
+  }, [tiles])
 
   const updateScore = () => {
     setScore(calculateScore(level, hintCount, shuffleCount, undoCount, game))
