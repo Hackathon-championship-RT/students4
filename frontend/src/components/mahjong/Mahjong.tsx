@@ -166,8 +166,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
         className="fixed top-0 w-full px-16"
         platesLeading={[
           {
-            id: 'title',
-            items: [{ icon: <span className="iconify ph--sign-out rotate-180" /> }],
+            id: 'exit',
+            items: [{ icon: <span className="iconify rotate-180 ph--sign-out" /> }],
             clickable: true,
             onClick: () => {
               alert('not yet :)')
@@ -189,7 +189,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             onClick: handleUndo,
           },
           {
-            id: 'undo',
+            id: 'shuffle',
             items: [{ icon: <span className="iconify ph--shuffle" /> }],
             clickable: true,
             onClick: () => {
@@ -199,7 +199,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
         ]}
         platesTrailing={[
           {
-            id: 'title',
+            id: 'info',
             items: [{ icon: <span className="iconify ph--info" /> }],
             clickable: true,
             onClick: () => {
