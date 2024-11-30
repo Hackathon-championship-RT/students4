@@ -14,15 +14,15 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   return (
-    <main className="h-full bg-black">
+    <main className="flex min-h-full bg-black">
       <video className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-cover blur-0" autoPlay muted loop playsInline>
         <source src="https://atom.auto/assets/videos/main-background.mp4" type="video/mp4" />
       </video>
       <div className="relative">
         <h1 className="mb-8 mt-6 text-center text-4xl font-bold">
-          Маджонг
+          АВТОМАДЖИК
         </h1>
-        <div className=" mb-8 mt-6 text-center text-xl font-semibold">
+        <div className="mb-8 mt-6 px-4 text-center text-xl font-semibold">
           Сыграйте в увлекательную игру и ближе познакомьтесь с ведущими автомобильными компаниями мира
         </div>
         <div className="flex flex-row flex-wrap justify-center gap-8">
