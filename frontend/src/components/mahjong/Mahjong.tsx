@@ -359,8 +359,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             position: 'absolute',
             top: '50%',
             left: '50%',
-            willChange: 'transform',
-            transition: 'transform 0.3s ease 0.5s',
+            willChange: 'transform, width, height',
+            transition: 'transform 0.3s ease 0.5s, width 0.3s ease 0.5s, height 0.3s ease 0.5s',
             transform: `scale(${scale}) translate(${offsetX}px, ${offsetY}px) translate(-50%, -50%)`,
             transformOrigin: 'top left',
           }}
