@@ -17,12 +17,13 @@ export const Route = createFileRoute('/finish')({
       time_passed: (search.time_passed as number | undefined) ?? undefined,
       help_number_used: (search.help_number_used as number | undefined) ?? undefined,
       clicks_num: (search.clicks_num as number | undefined) ?? undefined,
+      score: (search.score as number | undefined) ?? undefined,
     }
   },
 })
 
 function RouteComponent() {
-  const { level: levelId, time_passed, help_number_used, clicks_num } = Route.useSearch()
+  const { level: levelId, time_passed, help_number_used, clicks_num, score } = Route.useSearch()
 
   const level = getLevelById(levelId)
 
@@ -44,7 +45,7 @@ function RouteComponent() {
   })
 
   useEffect(() => {
-    if (levelId === undefined || time_passed === undefined || clicks_num === undefined || help_number_used === undefined) {
+    if (levelId === undefined || time_passed === undefined || score === undefined) {
       return
     }
     if (refSent.current) {
@@ -56,17 +57,19 @@ function RouteComponent() {
       body: {
         level_name: levelId,
         time_passed,
-        help_number_used,
-        clicks_num,
+        help_number_used: 0,
+        clicks_num: score,
       },
     })
-  }, [levelId, time_passed, help_number_used, clicks_num, sendResult])
+  }, [levelId, time_passed, help_number_used, clicks_num, sendResult, score])
 
   if (!level) {
     return <div>Invalid level id</div>
   }
 
   const resultsTable = [...(levelResults ?? [])].sort((a, b) => {
+    if (b.lvlInfo.clicks_num - a.lvlInfo.clicks_num !== 0)
+      return b.lvlInfo.clicks_num - a.lvlInfo.clicks_num
     return a.lvlInfo.time_passed - b.lvlInfo.time_passed
   })
 
@@ -92,6 +95,11 @@ function RouteComponent() {
             {pluralize(time_passed ?? 0, 'секунда', 'секунды', 'секунд')}
           </div>
           <div>
+            Очки:
+            {' '}
+            {score}
+          </div>
+          <div>
             Использовано подсказок:
             {' '}
             {help_number_used}
@@ -104,14 +112,13 @@ function RouteComponent() {
 
           <Separator className="my-4" />
 
-          <div className="grid grid-cols-4 space-x-2">
+          <div className="grid grid-cols-3 space-x-2">
             <div className="flex items-center justify-center">#</div>
+            <div className="flex items-center justify-center">Баллы</div>
             <div className="flex items-center justify-center">Секунд</div>
-            <div className="flex items-center justify-center">Подсказок</div>
-            <div className="flex items-center justify-center">Кликов</div>
           </div>
           <Separator className="my-2" />
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {resultsTable.map((result, i) => (
               <Fragment key={i}>
                 <div className="flex items-center justify-center gap-1">
@@ -125,9 +132,8 @@ function RouteComponent() {
                     {i + 1}
                   </div>
                 </div>
-                <div className="flex items-center justify-center">{result.lvlInfo.time_passed}</div>
-                <div className="flex items-center justify-center">{result.lvlInfo.help_number_used}</div>
                 <div className="flex items-center justify-center">{result.lvlInfo.clicks_num}</div>
+                <div className="flex items-center justify-center">{result.lvlInfo.time_passed}</div>
               </Fragment>
             ))}
           </div>
