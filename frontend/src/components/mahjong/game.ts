@@ -10,6 +10,12 @@ export type Tile = {
 }
 export type Comparator = (kindA: string, kindB: string) => boolean
 
+export type TileSelectOutcome =
+  | 'none'
+  | 'selected'
+  | 'unselected'
+  | 'merged'
+
 export class Game {
   private inGameTiles: Tile[]
   private selectedTile: Tile | null
@@ -101,30 +107,43 @@ export class Game {
     return this.inGameTiles
   }
 
-  public selectAt(coord: Coordinate2D): void {
+  public selectTileAt(exactCoord: Coordinate): TileSelectOutcome {
+    const tile = this.inGameTiles.find(tile => coordsEqual(tile.coord, exactCoord))
+    if (!tile)
+      return 'none'
+    return this.selectTile(tile)
+  }
+
+  public selectTileAtPoint(coord: Coordinate2D): TileSelectOutcome {
     const tile = this.tilesAt2D(coord)[0]
     if (!tile)
-      return
+      return 'none'
+    return this.selectTile(tile)
+  }
 
+  private selectTile(tile: Tile): TileSelectOutcome {
     if (this.selectedTile) {
       if (coordsEqual(this.selectedTile.coord, tile.coord)) {
         this.selectedTile = null
         this.onSelectedTileChange?.(this.selectedTile)
-        return
+        return 'unselected'
       }
       else if (this.comparator(this.selectedTile.kind, tile.kind) && this.isTileOpen(tile.coord)) {
         this.removePairTiles(this.selectedTile.coord, tile.coord)
         this.moveHistory.push([this.selectedTile, tile]) // Track the move
         this.selectedTile = null
         this.onSelectedTileChange?.(this.selectedTile)
-        return
+        return 'merged'
       }
     }
 
     if (this.isTileOpen(tile.coord)) {
       this.selectedTile = tile
       this.onSelectedTileChange?.(this.selectedTile)
+      return 'selected'
     }
+
+    return 'none'
   }
 
   public removePairTiles(coord1: Coordinate, coord2: Coordinate): void {
@@ -185,7 +204,6 @@ export class Game {
 
   public undoLastMove(): void {
     if (this.moveHistory.length === 0) {
-      console.log('No move to undo')
       return
     }
 

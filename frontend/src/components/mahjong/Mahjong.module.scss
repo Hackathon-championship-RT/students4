@@ -3,8 +3,9 @@ $logo-w: 200px;
 $original-tile-w: 240px;
 $original-tile-h: 180px;
 $original-tile-offset: 8px;
-$scale-ratio: $tile-w / $original-tile-w;
+$scale-ratio: calc($tile-w / $original-tile-w);
 
+$z-boom: 10;
 $z-glass: 4;
 $z-noise: 3;
 $z-logo: 2;
@@ -12,7 +13,7 @@ $z-bg: 1;
 $z-back: 0;
 
 .tile {
-  aspect-ratio: $original-tile-w / $original-tile-h;
+  aspect-ratio: calc($original-tile-w / $original-tile-h);
   width: $tile-w;
   position: relative;
   overflow: visible;
@@ -21,13 +22,23 @@ $z-back: 0;
   left: 0;
   top: 0;
 
-  // y is multiplied by 0.5, since the tile occupies 2 slots.
-  transform: translate(
-    calc(((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--x) * $tile-w),
-    calc(
-      ((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--y) * $original-tile-h * $scale-ratio * 0.5
-    )
-  );
+  &:not(.animated) {
+    // y is multiplied by 0.5, since the tile occupies 2 slots.
+    transform: translate(
+      calc(((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--x) * $tile-w),
+      calc(
+        ((var(--z) - 1) * $original-tile-offset * $scale-ratio * -1) + var(--y) * $original-tile-h * $scale-ratio * 0.5
+      )
+    );
+  }
+
+  &.animated {
+    pointer-events: none;
+  }
+
+  &.selected {
+    filter: sepia(0.3) saturate(1.5) brightness(1.2);
+  }
 
   &.closed {
     filter: grayscale(60%) brightness(70%);
@@ -52,7 +63,7 @@ $z-back: 0;
 
   [data-logo] {
     z-index: $z-logo;
-    width: $logo-w / $original-tile-w * 100%;
+    width: calc($logo-w / $original-tile-w) * 100%;
 
     // @todo Create a glow effect by duplicating image behind and blurring backdrop.
     //  Solution below doesn't work correctly in Chrome and is even worse in Safari.
@@ -96,8 +107,8 @@ $z-back: 0;
     top: 0;
     left: 0;
     position: absolute;
-    width: ($original-tile-w + $original-tile-offset) * ($tile-w / $original-tile-w);
-    height: ($original-tile-h + $original-tile-offset) * ($tile-w / $original-tile-w);
+    width: ($original-tile-w + $original-tile-offset) * calc($tile-w / $original-tile-w);
+    height: ($original-tile-h + $original-tile-offset) * calc($tile-w / $original-tile-w);
     background: linear-gradient(180deg, #404040 94.39%, #252525 100%);
     mask-image: url('./assets/tile-back.svg');
     mask-size: contain;
@@ -115,4 +126,12 @@ $z-back: 0;
     background: #5d5d5d;
     box-shadow: inset 2px 4px 20px 4px rgba(0, 0, 0, 0.5);
   }
+}
+
+.boom {
+  z-index: $z-boom;
+  pointer-events: none;
+  position: fixed;
+  width: 300px;
+  height: 300px;
 }

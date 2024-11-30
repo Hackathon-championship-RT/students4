@@ -1,25 +1,28 @@
 import type { CSSProperties } from 'react'
 import type { Coordinate } from './game'
 import { cn } from '@/lib/utils'
-import styles from './Tile.module.scss'
+import styles from './Mahjong.module.scss'
 
 export function Tile({
   className,
   brand,
   closed,
+  selected,
   coord,
   onClick,
 }: {
   className?: string
   brand: string
   closed: boolean
+  selected: boolean
   coord: Coordinate
   onClick?: () => void
 }) {
   const imgPath = `/logos/${brand}-logo.png`
   return (
     <div
-      className={cn(styles.tile, closed && styles.closed, className)}
+      className={cn(styles.tile, closed && styles.closed, selected && styles.selected, className)}
+      data-coord={`${coord.x},${coord.y},${coord.z}`}
       style={{
         '--x': coord.x,
         '--y': coord.y,
