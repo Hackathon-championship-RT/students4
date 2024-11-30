@@ -61,6 +61,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [score, setScore] = useState(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const animatingElements = useRef<Set<HTMLElement>>(new Set())
 
   const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
 
@@ -132,6 +133,12 @@ export function Mahjong({ level }: { level: LevelInfo }) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiles])
+
+  useEffect(() => {
+    return () => {
+      animatingElements.current.forEach(e => e.remove())
+    }
+  }, [])
 
   const updateScore = () => {
     setScore(calculateScore(level, hintCount, shuffleCount, undoCount, game))
@@ -232,9 +239,14 @@ export function Mahjong({ level }: { level: LevelInfo }) {
               },
             )
 
+            animatingElements.current.add(aClone)
+            animatingElements.current.add(bClone)
+
             aAnim.addEventListener('finish', () => {
               aClone.remove()
               bClone.remove()
+              animatingElements.current.delete(aClone)
+              animatingElements.current.delete(bClone)
               setMergedAt(middle)
             })
 
