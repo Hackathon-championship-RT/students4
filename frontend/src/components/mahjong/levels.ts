@@ -1,5 +1,5 @@
 import type { EncodedTemplate } from '@/components/mahjong/field-template.ts'
-import { TEMPLATE_1, TEMPLATE_2 } from '@/components/mahjong/field-template.ts'
+import { TEMPLATE_1, TEMPLATE_2, TURTLE, ZEN_1, ZEN_2, ZEN_3, ZEN_4, ZEN_5, ZEN_6, ZEN_7 } from '@/components/mahjong/field-template.ts'
 
 const allChoices = [
   'alfa-romeo',
@@ -126,6 +126,70 @@ export const levels: LevelInfo[] = [
       'subaru',
       'toyota',
     ],
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-1',
+    title: 'Zen 1',
+    description: '',
+    template: ZEN_1,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-2',
+    title: 'Zen 2',
+    description: '',
+    template: ZEN_2,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-3',
+    title: 'Zen 3',
+    description: '',
+    template: ZEN_3,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-4',
+    title: 'Zen 4',
+    description: '',
+    template: ZEN_4,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-5',
+    title: 'Zen 5',
+    description: '',
+    template: ZEN_5,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-6',
+    title: 'Zen 6',
+    description: '',
+    template: ZEN_6,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'zen-7',
+    title: 'Zen 7',
+    description: '',
+    template: ZEN_7,
+    choices: allChoices,
+    requiredLevel: '2',
+  },
+  {
+    id: 'turtle',
+    title: 'Черепаха',
+    description: 'Черепашка',
+    template: TURTLE,
+    choices: allChoices,
     requiredLevel: '2',
   },
 ]
