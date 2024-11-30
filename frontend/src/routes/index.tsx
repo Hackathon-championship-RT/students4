@@ -71,7 +71,7 @@ function LevelCard({ level }: { level: LevelInfo }) {
       </CardContent>
       <CardFooter>
         <Button asChild disabled={!isUnlocked} variant={isUnlocked ? 'default' : 'secondary'}>
-          <Link to="/play" search={{ level: level.id }} className="w-full">
+          <Link to="/info" search={{ level: level.id }} className="w-full">
             {isUnlocked ? 'Играть' : 'Заблокировано'}
           </Link>
         </Button>

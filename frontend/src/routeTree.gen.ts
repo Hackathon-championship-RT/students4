@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RatingImport } from './routes/rating'
 import { Route as PlayImport } from './routes/play'
+import { Route as InfoImport } from './routes/info'
 import { Route as FinishImport } from './routes/finish'
 import { Route as IndexImport } from './routes/index'
 
@@ -27,6 +28,12 @@ const RatingRoute = RatingImport.update({
 const PlayRoute = PlayImport.update({
   id: '/play',
   path: '/play',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const InfoRoute = InfoImport.update({
+  id: '/info',
+  path: '/info',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FinishImport
       parentRoute: typeof rootRoute
     }
+    '/info': {
+      id: '/info'
+      path: '/info'
+      fullPath: '/info'
+      preLoaderRoute: typeof InfoImport
+      parentRoute: typeof rootRoute
+    }
     '/play': {
       id: '/play'
       path: '/play'
@@ -82,6 +96,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/finish': typeof FinishRoute
+  '/info': typeof InfoRoute
   '/play': typeof PlayRoute
   '/rating': typeof RatingRoute
 }
@@ -89,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/finish': typeof FinishRoute
+  '/info': typeof InfoRoute
   '/play': typeof PlayRoute
   '/rating': typeof RatingRoute
 }
@@ -97,22 +113,24 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/finish': typeof FinishRoute
+  '/info': typeof InfoRoute
   '/play': typeof PlayRoute
   '/rating': typeof RatingRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/finish' | '/play' | '/rating'
+  fullPaths: '/' | '/finish' | '/info' | '/play' | '/rating'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/finish' | '/play' | '/rating'
-  id: '__root__' | '/' | '/finish' | '/play' | '/rating'
+  to: '/' | '/finish' | '/info' | '/play' | '/rating'
+  id: '__root__' | '/' | '/finish' | '/info' | '/play' | '/rating'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FinishRoute: typeof FinishRoute
+  InfoRoute: typeof InfoRoute
   PlayRoute: typeof PlayRoute
   RatingRoute: typeof RatingRoute
 }
@@ -120,6 +138,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FinishRoute: FinishRoute,
+  InfoRoute: InfoRoute,
   PlayRoute: PlayRoute,
   RatingRoute: RatingRoute,
 }
@@ -136,6 +155,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/finish",
+        "/info",
         "/play",
         "/rating"
       ]
@@ -145,6 +165,9 @@ export const routeTree = rootRoute
     },
     "/finish": {
       "filePath": "finish.tsx"
+    },
+    "/info": {
+      "filePath": "info.tsx"
     },
     "/play": {
       "filePath": "play.tsx"
