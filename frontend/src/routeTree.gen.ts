@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TestImport } from './routes/test'
 import { Route as PlayImport } from './routes/play'
+import { Route as FinishImport } from './routes/finish'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -26,6 +27,12 @@ const TestRoute = TestImport.update({
 const PlayRoute = PlayImport.update({
   id: '/play',
   path: '/play',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FinishRoute = FinishImport.update({
+  id: '/finish',
+  path: '/finish',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -44,6 +51,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/finish': {
+      id: '/finish'
+      path: '/finish'
+      fullPath: '/finish'
+      preLoaderRoute: typeof FinishImport
       parentRoute: typeof rootRoute
     }
     '/play': {
@@ -67,12 +81,14 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/finish': typeof FinishRoute
   '/play': typeof PlayRoute
   '/test': typeof TestRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/finish': typeof FinishRoute
   '/play': typeof PlayRoute
   '/test': typeof TestRoute
 }
@@ -80,27 +96,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/finish': typeof FinishRoute
   '/play': typeof PlayRoute
   '/test': typeof TestRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/play' | '/test'
+  fullPaths: '/' | '/finish' | '/play' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/play' | '/test'
-  id: '__root__' | '/' | '/play' | '/test'
+  to: '/' | '/finish' | '/play' | '/test'
+  id: '__root__' | '/' | '/finish' | '/play' | '/test'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FinishRoute: typeof FinishRoute
   PlayRoute: typeof PlayRoute
   TestRoute: typeof TestRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FinishRoute: FinishRoute,
   PlayRoute: PlayRoute,
   TestRoute: TestRoute,
 }
@@ -116,12 +135,16 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/finish",
         "/play",
         "/test"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/finish": {
+      "filePath": "finish.tsx"
     },
     "/play": {
       "filePath": "play.tsx"

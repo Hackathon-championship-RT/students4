@@ -44,6 +44,7 @@ export type LevelInfo = {
   description: string
   template: EncodedTemplate
   choices: Choice[]
+  requiredLevel?: string | null
 }
 
 export const levels: LevelInfo[] = [
@@ -53,6 +54,7 @@ export const levels: LevelInfo[] = [
     description: 'Самый простой уровень',
     template: TEMPLATE_1,
     choices: allChoices,
+    requiredLevel: null,
   },
   {
     id: '2',
@@ -60,6 +62,7 @@ export const levels: LevelInfo[] = [
     description: 'Чуть сложнее',
     template: TEMPLATE_2,
     choices: allChoices,
+    requiredLevel: '1',
   },
   {
     id: '3',
@@ -69,6 +72,7 @@ export const levels: LevelInfo[] = [
     choices: [
       'atom',
     ],
+    requiredLevel: '2',
   },
   {
     id: '4',
@@ -84,6 +88,7 @@ export const levels: LevelInfo[] = [
       'rolls-royce',
       'tesla',
     ],
+    requiredLevel: '2',
   },
   {
     id: '5',
@@ -97,6 +102,7 @@ export const levels: LevelInfo[] = [
       'porsche',
       'volkswagen',
     ],
+    requiredLevel: '2',
   },
   {
     id: '6',
@@ -107,6 +113,7 @@ export const levels: LevelInfo[] = [
       'byd',
       'nio',
     ],
+    requiredLevel: '2',
   },
   {
     id: '7',
@@ -119,6 +126,7 @@ export const levels: LevelInfo[] = [
       'subaru',
       'toyota',
     ],
+    requiredLevel: '2',
   },
 ]
 

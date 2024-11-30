@@ -1,4 +1,5 @@
 import type { LevelInfo } from '@/components/mahjong/levels.ts'
+import { $api } from '@/api'
 import { FieldTemplate } from '@/components/mahjong/field-template.ts'
 import { levels } from '@/components/mahjong/levels.ts'
 import { Button } from '@/components/ui/button.tsx'
@@ -25,8 +26,8 @@ function RouteComponent() {
           Сыграйте в увлекательную игру и ближе познакомьтесь с ведущими автомобильными компаниями мира
         </div>
         <div className="flex flex-row flex-wrap justify-center gap-8">
-          {levels.map((level, i) => (
-            <LevelCard key={i} level={level} isUnlocked={i < 2} />
+          {levels.map(level => (
+            <LevelCard key={level.id} level={level} />
           ))}
         </div>
       </div>
@@ -34,11 +35,15 @@ function RouteComponent() {
   )
 }
 
-function LevelCard({ level, isUnlocked }: { level: LevelInfo, isUnlocked: boolean }) {
+function LevelCard({ level }: { level: LevelInfo }) {
   const diceCount = useMemo(() => {
     const decoded = FieldTemplate.decode(level.template)
     return decoded.tileCoords.length
   }, [level])
+
+  const { data: results } = $api.useQuery('get', '/users/result')
+
+  const isUnlocked = !level.requiredLevel || results?.some(result => result.level_name === level.requiredLevel || result.level_name === level.id)
 
   return (
     <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-emerald-500">
