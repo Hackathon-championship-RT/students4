@@ -1,8 +1,11 @@
-import type { LevelInfo } from '@/components/mahjong/levels.ts'
 import type { DotLottieWorker } from '@lottiefiles/dotlottie-react'
 import type { Coordinate, Tile as TileT } from './game'
+import { $api } from '@/api'
+import { useMe } from '@/api/me'
+import { getLevelById, type LevelInfo } from '@/components/mahjong/levels.ts'
 import { calculateScore } from '@/components/mahjong/score.ts'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx'
 import {
   Dialog,
   DialogClose,
@@ -11,10 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { cn, pluralize } from '@/lib/utils'
 import { DotLottieWorkerReact } from '@lottiefiles/dotlottie-react'
-import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import useSound from 'use-sound'
+import { Separator } from '../ui/separator'
 import soundTilesMergedDelayed from './assets/bloop_300ms.mp3'
 import boomLottie from './assets/boom.lottie?arraybuffer'
 import soundTileSelect from './assets/pop-down.mp3'
@@ -91,6 +97,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
     containerRef.current?.clientHeight ?? window.innerHeight,
   )
 
+  const [finishResults, setFinishResults] = useState<any>(null)
+
   useEffect(() => {
     if (mergedAt) {
       lottie?.setFrame(0)
@@ -112,15 +120,12 @@ export function Mahjong({ level }: { level: LevelInfo }) {
 
   useEffect(() => {
     if (tiles.length === 0) {
-      navigate({
-        to: '/finish',
-        search: {
-          level: level.id,
-          time_passed: Math.round((Date.now() - startTime) / 1000),
-          help_number_used: hintCount ?? 0,
-          clicks_num: clicksCount ?? 0,
-          score: calculateScore(level, hintCount, shuffleCount, undoCount, game),
-        },
+      setFinishResults({
+        level: level.id,
+        time_passed: Math.round((Date.now() - startTime) / 1000),
+        help_number_used: hintCount ?? 0,
+        clicks_num: clicksCount ?? 0,
+        score: calculateScore(level, hintCount, shuffleCount, undoCount, game),
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,7 +174,8 @@ export function Mahjong({ level }: { level: LevelInfo }) {
         playTilesMergedDelayed()
 
         const lastMove = game.lastMove()
-        if (containerRef.current && lottie && lastMove) {
+        const leftTiles = game.tiles().length
+        if (containerRef.current && lottie && lastMove && leftTiles > 0) {
           const [tileA, tileB] = lastMove
           const aEl = containerRef.current.querySelector(`[data-coord="${tileA.coord.x},${tileA.coord.y},${tileA.coord.z}"]`)
           const bEl = containerRef.current.querySelector(`[data-coord="${tileB.coord.x},${tileB.coord.y},${tileB.coord.z}"]`)
@@ -391,7 +397,9 @@ export function Mahjong({ level }: { level: LevelInfo }) {
 
           <div className="flex flex-col gap-4 text-muted-foreground">
             <p>{lastBrandInfo?.description}</p>
-            <p>{lastBrandInfo?.history}</p>
+            {lastBrandInfo && 'history' in lastBrandInfo && (
+              <p>{lastBrandInfo.history as any}</p>
+            )}
           </div>
 
           <DialogFooter>
@@ -424,6 +432,214 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={finishResults !== null} onOpenChange={() => {}}>
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[425px] lg:max-w-[625px]" noCloseIcon>
+          <DialogHeader>
+            <DialogTitle>Поздравляем!</DialogTitle>
+          </DialogHeader>
+          {finishResults && (<Results {...finishResults} />)}
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+function Results({
+  level: levelId,
+  time_passed,
+  help_number_used,
+  clicks_num,
+  score,
+}: {
+  level?: string
+  time_passed?: number
+  help_number_used?: number
+  clicks_num?: number
+  score?: number
+}) {
+  const level = getLevelById(levelId)
+
+  const me = useMe()
+  const refSent = useRef(false)
+  const queryClient = useQueryClient()
+  const { mutate: sendResult } = $api.useMutation('post', '/users/result', {
+    onSettled: () => {
+      queryClient.resetQueries({
+        queryKey: $api.queryOptions('get', '/users/result/{level_name}', {
+          params: { path: { level_name: levelId ?? '' } },
+        }).queryKey,
+      })
+    },
+  })
+
+  const { data: levelResults } = $api.useQuery('get', '/users/result/{level_name}', {
+    params: { path: { level_name: levelId ?? '' } },
+  })
+
+  useEffect(() => {
+    if (levelId === undefined || time_passed === undefined || score === undefined) {
+      return
+    }
+    if (refSent.current) {
+      return
+    }
+    refSent.current = true
+
+    sendResult({
+      body: {
+        level_name: levelId,
+        time_passed,
+        help_number_used: 0,
+        clicks_num: score,
+      },
+    })
+  }, [levelId, time_passed, help_number_used, clicks_num, sendResult, score])
+
+  if (!level) {
+    return <div>Invalid level id</div>
+  }
+
+  const resultsTable = [...(levelResults ?? [])].sort((a, b) => {
+    if (b.lvlInfo.clicks_num - a.lvlInfo.clicks_num !== 0)
+      return b.lvlInfo.clicks_num - a.lvlInfo.clicks_num
+    return a.lvlInfo.time_passed - b.lvlInfo.time_passed
+  })
+
+  return (
+    <div>
+      <p className="mb-4 text-muted-foreground">
+        Вы прошли уровень
+        {' '}
+        «
+        {level.title}
+        »
+      </p>
+      <CardContent>
+        <div>
+          Баллы:
+          {' '}
+          {score}
+        </div>
+        <div>
+          Время:
+          {' '}
+          {time_passed}
+          {' '}
+          {pluralize(time_passed ?? 0, 'секунда', 'секунды', 'секунд')}
+        </div>
+        <div>
+          Использовано подсказок:
+          {' '}
+          {help_number_used}
+        </div>
+        <div>
+          Сделано кликов:
+          {' '}
+          {clicks_num}
+        </div>
+
+        <div className="my-2 flex w-full flex-row gap-2">
+          {(help_number_used === 0) && (
+            <Card className="max-w-40">
+              <CardContent className="px-4 py-2">
+                <div className="aspect-square rounded-lg bg-gray-500">
+                  <img src="/no-hints.png" />
+                </div>
+              </CardContent>
+              <CardHeader className="px-4 py-2">
+                <CardTitle className="text-center text-lg">
+                  Без подсказок!
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          )}
+
+          {(clicks_num === FieldTemplate.decode(level.template).tileCoords.length) && (
+            <Card className="max-w-40">
+              <CardContent className="px-4 py-2">
+                <div className="aspect-square rounded-lg bg-gray-500">
+                  <img src="/no-clicks.png" />
+                </div>
+              </CardContent>
+              <CardHeader className="px-4 py-2">
+                <CardTitle className="text-center text-lg">
+                  Без лишних кликов!
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          )}
+
+          {(time_passed !== undefined && time_passed < 60) && (
+            <Card className="max-w-40">
+              <CardContent className="px-4 py-2">
+                <div className="aspect-square rounded-lg bg-gray-500">
+                  <img src="/very-fast.png" />
+                </div>
+              </CardContent>
+              <CardHeader className="px-4 py-2">
+                <CardTitle className="text-center text-lg">
+                  Очень быстро!
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          )}
+
+          {(help_number_used === 0 && clicks_num === FieldTemplate.decode(level.template).tileCoords.length && time_passed !== undefined && time_passed < 60) && (
+            <Card className="max-w-40">
+              <CardContent className="px-4 py-2">
+                <div className="aspect-square rounded-lg bg-gray-500">
+                  <img src="/ideal.png" />
+                </div>
+              </CardContent>
+              <CardHeader className="px-4 py-2">
+                <CardTitle className="text-center text-lg">
+                  Идеально!
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          )}
+        </div>
+
+        <Separator className="my-2" />
+
+        <div className="grid grid-cols-3 space-x-2">
+          <div className="flex items-center justify-center">#</div>
+          <div className="flex items-center justify-center">Баллы</div>
+          <div className="flex items-center justify-center">Секунд</div>
+        </div>
+        <Separator className="my-2" />
+        <div className="grid grid-cols-3 gap-2">
+          {resultsTable.map((result, i) => (
+            <Fragment key={result.user_id}>
+              <div className={cn(
+                'flex items-center justify-center gap-1 rounded-full p-1',
+                me?.id === result.user_id ? 'bg-yellow-500/25' : '',
+              )}
+              >
+                {i + 1 === 1
+                  ? '🥇'
+                  : i + 1 === 2
+                    ? '🥈'
+                    : i + 1 === 3
+                      ? '🥉'
+                      : (
+                          i + 1
+                        )}
+              </div>
+              <div className="flex items-center justify-center font-bold">{result.lvlInfo.clicks_num}</div>
+              <div className="flex items-center justify-center">{Math.round(result.lvlInfo.time_passed)}</div>
+            </Fragment>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button asChild className="w-full">
+          <Link to="/">
+            В меню
+          </Link>
+        </Button>
+      </CardFooter>
     </div>
   )
 }
