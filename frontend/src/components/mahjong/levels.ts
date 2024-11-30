@@ -63,7 +63,7 @@ export const levels: LevelInfo[] = [
   {
     id: 'zen-2',
     title: 'Обучение 2',
-    description: '',
+    description: 'Теперь сложнее',
     template: ZEN_2,
     choices: allChoices,
     requiredLevel: 'zen-1',
@@ -72,7 +72,7 @@ export const levels: LevelInfo[] = [
   {
     id: 'zen-3',
     title: 'Обучение 3',
-    description: '',
+    description: 'Сложнее и сложнее',
     template: ZEN_3,
     choices: allChoices,
     requiredLevel: 'zen-2',
