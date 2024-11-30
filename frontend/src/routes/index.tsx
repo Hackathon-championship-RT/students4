@@ -46,7 +46,7 @@ function LevelCard({ level }: { level: LevelInfo }) {
   const isUnlocked = !level.requiredLevel || results?.some(result => result.level_name === level.requiredLevel || result.level_name === level.id)
 
   return (
-    <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-emerald-500">
+    <Card className="bg-black bg-opacity-40 backdrop-blur-md transition-all hover:border-[#00D0C5]">
       <CardHeader>
         <CardTitle>{level.title}</CardTitle>
         <CardDescription>
