@@ -76,7 +76,7 @@ function RouteComponent() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="max-w-4xl">
+      <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Поздравляем!</CardTitle>
           <CardDescription>
@@ -111,34 +111,64 @@ function RouteComponent() {
             {clicks_num}
           </div>
 
-          <div className="my-2 flex flex-row gap-2">
+          <div className="my-2 flex w-full flex-row gap-2">
             {(help_number_used === 0) && (
               <Card className="max-w-40">
+                <CardContent className="px-4 py-2">
+                  <div className="aspect-square rounded-lg bg-gray-500">
+                    <img src="/no-hints.png" />
+                  </div>
+                </CardContent>
                 <CardHeader className="px-4 py-2">
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-center text-lg">
                     Без подсказок!
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-4 py-2">
-                  <div className="aspect-square rounded-lg bg-gray-500">
-
-                  </div>
-                </CardContent>
               </Card>
             )}
 
             {(clicks_num === FieldTemplate.decode(level.template).tileCoords.length) && (
               <Card className="max-w-40">
-                <CardHeader className="px-4 py-2">
-                  <CardTitle className="text-lg">
-                    Минимум кликов!
-                  </CardTitle>
-                </CardHeader>
                 <CardContent className="px-4 py-2">
                   <div className="aspect-square rounded-lg bg-gray-500">
-
+                    <img src="/no-clicks.png" />
                   </div>
                 </CardContent>
+                <CardHeader className="px-4 py-2">
+                  <CardTitle className="text-center text-lg">
+                    Без лишних кликов!
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            )}
+
+            {(time_passed !== undefined && time_passed < 60) && (
+              <Card className="max-w-40">
+                <CardContent className="px-4 py-2">
+                  <div className="aspect-square rounded-lg bg-gray-500">
+                    <img src="/very-fast.png" />
+                  </div>
+                </CardContent>
+                <CardHeader className="px-4 py-2">
+                  <CardTitle className="text-center text-lg">
+                    Очень быстро!
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            )}
+
+            {(help_number_used === 0 && clicks_num === FieldTemplate.decode(level.template).tileCoords.length && time_passed !== undefined && time_passed < 60) && (
+              <Card className="max-w-40">
+                <CardContent className="px-4 py-2">
+                  <div className="aspect-square rounded-lg bg-gray-500">
+                    <img src="/ideal.png" />
+                  </div>
+                </CardContent>
+                <CardHeader className="px-4 py-2">
+                  <CardTitle className="text-center text-lg">
+                    Идеально!
+                  </CardTitle>
+                </CardHeader>
               </Card>
             )}
           </div>
