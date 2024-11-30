@@ -8,6 +8,7 @@ export function Tile({
   brand,
   closed,
   selected,
+  hinted,
   coord,
   onClick,
 }: {
@@ -15,13 +16,14 @@ export function Tile({
   brand: string
   closed: boolean
   selected: boolean
+  hinted: boolean
   coord: Coordinate
   onClick?: () => void
 }) {
   const imgPath = `/logos/${brand}-logo.png`
   return (
     <div
-      className={cn(styles.tile, closed && styles.closed, selected && styles.selected, className)}
+      className={cn(styles.tile, closed && styles.closed, selected && styles.selected, hinted && styles.hinted, className)}
       data-coord={`${coord.x},${coord.y},${coord.z}`}
       style={{
         '--x': coord.x,

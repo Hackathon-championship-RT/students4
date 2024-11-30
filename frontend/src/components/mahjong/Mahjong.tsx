@@ -19,6 +19,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
   const [tiles, setTiles] = useState<TileT[]>([])
   const [selected, setSelected] = useState<TileT | null>(null)
   const [mergedAt, setMergedAt] = useState<{ x: number, y: number } | null>(null)
+  const [hint, setHint] = useState<[TileT, TileT] | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [playTilesMergedDelayed] = useSound(soundTilesMergedDelayed, { volume: 0.8 })
@@ -56,6 +57,14 @@ export function Mahjong({ level }: { level: LevelInfo }) {
 
   const handleUndo = () => {
     game.undoLastMove()
+  }
+
+  const handleShuffle = () => {
+    game.shuffle()
+  }
+
+  const handleHint = () => {
+    setHint(game.hint(hint))
   }
 
   const handleTileClick = (t: TileT) => {
@@ -192,9 +201,13 @@ export function Mahjong({ level }: { level: LevelInfo }) {
             id: 'shuffle',
             items: [{ icon: <span className="iconify ph--shuffle" /> }],
             clickable: true,
-            onClick: () => {
-              alert('not yet :)')
-            },
+            onClick: handleShuffle,
+          },
+          {
+            id: 'hint',
+            items: [{ icon: <span className="iconify ph--lightbulb-fill" /> }],
+            clickable: true,
+            onClick: handleHint,
           },
         ]}
         platesTrailing={[
@@ -235,6 +248,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
           brand={t.kind}
           closed={!game.isTileOpen(t.coord)}
           selected={t === selected}
+          hinted={hint?.includes(t) ?? false}
           onClick={() => handleTileClick(t)}
           coord={t.coord}
         />

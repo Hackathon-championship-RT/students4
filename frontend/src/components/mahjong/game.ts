@@ -213,6 +213,64 @@ export class Game {
       this.onTilesChange,
     )
   }
+
+  public shuffle(): void {
+    const tiles = this.tiles().slice()
+    // shuffle coordinates while keeping kind count
+    const kindCounter: { [key: string]: number } = {}
+    for (const tile of tiles) {
+      kindCounter[tile.kind] = (kindCounter[tile.kind] || 0) + 1
+    }
+
+    const availableCoords = tiles.map(tile => tile.coord)
+    shuffleArray(availableCoords)
+    const newTiles: Tile[] = []
+    for (const tile of tiles) {
+      const coord = availableCoords.pop()
+      if (!coord) {
+        throw new Error('Not enough available coordinates')
+      }
+      newTiles.push({ kind: tile.kind, coord })
+    }
+
+    this.tileMap = new TileMap(newTiles)
+    this.selectedTile = null
+    this.moveHistory = []
+    this.onTilesChange?.(this.tiles())
+  }
+
+  public hint(previousPair: [Tile, Tile] | null): [Tile, Tile] | null {
+    const openTiles = this.tiles().filter(tile => this.isTileOpen(tile.coord))
+    shuffleArray(openTiles)
+
+    const seen = new Set<Tile>()
+    let fallbackPair: [Tile, Tile] | null = null
+
+    for (const tile of openTiles) {
+      for (const seenTile of seen) {
+        if (this.comparator(tile.kind, seenTile.kind)) {
+          const newPair: [Tile, Tile] = [tile, seenTile]
+          // If no previousPair or the new pair is different, return it
+          if (!previousPair) {
+            return newPair
+          }
+          if (
+            !(coordsEqual(previousPair[0].coord, newPair[0].coord) && coordsEqual(previousPair[1].coord, newPair[1].coord))
+            && !(coordsEqual(previousPair[0].coord, newPair[1].coord) && coordsEqual(previousPair[1].coord, newPair[0].coord))
+          ) {
+            return newPair
+          }
+
+          // Otherwise, store it as a fallback
+          fallbackPair = newPair
+        }
+      }
+      seen.add(tile)
+    }
+
+    // If no new pair is found, return the fallbackPair (could be previousPair)
+    return fallbackPair
+  }
 }
 
 export function coordsEqual(a: Coordinate, b: Coordinate): boolean {
