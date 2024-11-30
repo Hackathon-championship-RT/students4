@@ -335,6 +335,7 @@ export function Mahjong({ level }: { level: LevelInfo }) {
               selected={t === selected}
               hinted={hint?.includes(t) ?? false}
               onClick={() => handleTileClick(t)}
+              hinted={hint?.includes(t) ?? false}
               coord={t.coord}
             />
           ))}

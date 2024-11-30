@@ -50,22 +50,6 @@ $z-back: 0;
     filter: sepia(0.3) saturate(1.5) brightness(1.2);
   }
 
-  &.hinted {
-    animation: glow 1.5s infinite alternate;
-    animation-duration: 6s;
-  }
-
-  @keyframes glow {
-    0% {
-    filter: sepia(0.1) saturate(1) brightness(1);
-      box-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
-    }
-    100% {
-      filter: sepia(0.2) saturate(1.5) brightness(1.2);
-      box-shadow: 0 0 10px rgba(255, 255, 0, 1);
-    }
-  }
-
   &.closed {
     filter: grayscale(60%) brightness(70%);
   }
@@ -74,6 +58,10 @@ $z-back: 0;
     [data-wrapper] {
       cursor: pointer;
     }
+  }
+
+  &:not(.selected).hinted {
+    animation: glow 1s infinite alternate;
   }
 
   [data-wrapper] {
@@ -197,4 +185,13 @@ $z-back: 0;
     0px 4px 4px rgba(0, 0, 0, 0.25),
     inset 0px 4px 6px rgba(0, 0, 0, 0.15);
   border-radius: 0px 0px 6px 6px;
+}
+
+@keyframes glow {
+  0% {
+    filter: sepia(0) saturate(1) brightness(1);
+  }
+  100% {
+    filter: sepia(0.2) saturate(1.5) brightness(1.2);
+  }
 }
