@@ -62,10 +62,10 @@ function LevelCard({ level }: { level: LevelInfo }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex aspect-video h-[200px] items-center justify-center rounded-xl border border-[rgba(255,255,255,0.075)] bg-[#191919] shadow-inner">
+        <div className="mx-auto flex aspect-video h-[175px] items-center justify-center rounded-xl border border-[rgba(255,255,255,0.075)] bg-[#191919] p-2 shadow-inner lg:h-[200px]">
           <img
             src={`/preview/${level.id}.png`}
-            className="aspect-video max-h-[200px] max-w-[300px] rounded-xl object-contain"
+            className="size-full rounded-xl object-contain object-center"
             onError={(e) => {
               e.currentTarget.style.display = 'none'
             }}
